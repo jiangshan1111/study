@@ -1,0 +1,23 @@
+<!--index.wxml-->
+<!-- <view class="container">
+  <view class="userinfo">
+    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
+    <block wx:else>
+      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+    </block>
+  </view>
+  <view class="usermotto">
+    <text class="user-motto">{{motto}}</text>
+    <navigator url="../home/index">跳转到江山页面</navigator>
+    <button bindtap="letGo">跳转到江山页面{{a}}</button>
+  </view>
+</view> -->
+<view>
+  <input class="input" type="number" bindinput="gaNumber" name="userName" placeholder="请输入数字"  style="border:1px solid rgb(110,110,110)"/>
+  <button bindtap="ga">获取</button>
+  <block wx:for="{{gaValue}}" wx:key="index">
+    <view>{{item}}</view>
+    
+  </block>
+</view>

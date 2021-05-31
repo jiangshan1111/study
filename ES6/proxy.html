@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div style="float: left;">
+    <label for="">1111
+      <select name="" id="">
+        <option value="12">12</option>
+        <option value="123">123</option>
+      </select>
+  </div>
+  <script type="module" src="./function.js"></script>
+  <script type="module">
+    import * as aabc from './function.js'
+    console.log(aabc)
+    //es6对象扩展
+    //代理模式
+    // var Letter = function () {
+    //   this.title = "若只如初见"
+    // }
+    // var manA = {
+    //   sendLetter: function (target) {
+    //     console.log(target)
+    //     var letter = new Letter();
+    //     target.receiveLetter(letter)
+    //   }
+    // }
+    // var girlB = {
+    //   receiveLetter: function (letter) {
+    //     girlC.listenGoodMood(function () {
+    //       girlC.receiveLetter(letter)
+    //     })
+    //   }
+    // }
+    // var girlC = {
+    //   receiveLetter: function (letter) {
+    //     console.log("收到情书" + letter.title)
+    //   },
+    //   listenGoodMood: function (fn) {
+    //     setTimeout(function () {
+    //       fn()
+    //     }, 2000)
+    //   }
+    // }
+
+    // manA.sendLetter(girlB)
+    // manA.sendLetter(girlC)
+
+
+    //class
+    // class Person {
+    //   constructor(obj) {
+    //     this.username = obj.username
+    //     this.age = obj.age;
+    //     this.init()
+    //   }
+    //   init() {
+    //     this.sayHi()
+    //     this.sayHello()
+    //   }
+    //   sayHi() {
+    //     console.log(this.age)
+    //   }
+    //   sayHello() {
+    //     console.log(this.username)
+    //   }
+    // }
+    // new Person({ username: '江山', age: 20 })
+    // person.init()
+
+    //async
+    // function sayHi() {
+    //   console.log(1)
+    // }
+    // async function sayHi1() {
+    //   await new Promise((resolve) => {
+    //     setTimeout(resolve, 1000)
+    //     // resolve(2)
+    //   });
+    //   return 2
+    // }
+    // async function Async() {
+    //   sayHi1().then((a) => {
+    //     console.log(a)
+    //   });
+    // }
+    // Async()
+  </script>
+</body>
+
+</html>

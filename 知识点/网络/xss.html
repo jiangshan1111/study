@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <input type="text" name="" id="xssInput">
+  <div id="xss">
+    <button onclick='alert("1\x29\x3balert\x282\u54c8\u54c8\x29")'>测试JavaScriptEncode值</button>
+<div>&lt;script&gt;alert(&#x27;1&#x54c8;&#x54c8;&#x27;&nbsp;&#x2F;);&lt;&#x2F;script&gt;</div>
+  </div>
+  <script>
+    // XSS 对应
+    function escapeHtml(value) {
+      if (typeof value !== 'string') {
+        return value
+      }
+      return value.replace(/[&<>`"'\/]/g, function(result) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '`': '&#x60;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '/': '&#x2f;',
+        }[result]
+      })
+    }
+    console.log(document.getElementById('xssInput'))
+    document.querySelector('#xssInput').addEventListener("keyup",function(e){
+      document.getElementById('xss').innerHTML = escapeHtml(e.target.value)
+      console.log(escapeHtml(e.target.value))
+    })
+  </script>
+</body>
+</html>

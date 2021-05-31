@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    var abstractVehicleFactory = (function () {
+      var types = {};
+      console.log(types)
+      return {
+        getVehicle: function (type, custom) {
+          var vehicle = types[type];
+          return (vehicle ? new vehicle(custom) : null)
+        },
+        registerVehicle: function (type, Vehicle) {
+          var proto = Vehicle.prototype;
+          // if (proto.color) {
+          types[type] = Vehicle;
+          console.log(types)
+          // }
+          return abstractVehicleFactory;
+        }
+      }
+    })()
+    function Car(options) {
+      this.doors = options.doors || 4;
+      this.color = options.color || "silver";
+    }
+    function Truck(options) {
+      this.state = options.state || "used";
+      this.color = options.color || "blue";
+    }
+    console.log(abstractVehicleFactory)
+    abstractVehicleFactory.registerVehicle("car", Car)
+    abstractVehicleFactory.registerVehicle("car", Truck)
+    abstractVehicleFactory.registerVehicle("truck", Truck)
+    var car = abstractVehicleFactory.getVehicle("car", {
+      color: 'lime green',
+      state: 'like new'
+    })
+    var truck = abstractVehicleFactory.getVehicle("truck", {
+      wheelSize: 'medium',
+      color: 'lime yellow',
+    })
+    console.log(car, truck)
+  </script>
+</body>
+
+</html>
