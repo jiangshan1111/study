@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加地址</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">添加地址</span>
+        </div>
+    </header>
+
+    <section class="g-scrollview">
+
+        <div class="m-cell demo-small-pitch">
+            <div class="cell-item">
+                <div class="cell-left">手机号：</div>
+                <div class="cell-right">
+                    <input type="text" name="userphone" class="cell-input" placeholder="请输入您的手机号" autocomplete="off" />
+                </div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">姓&nbsp;&nbsp;&nbsp;&nbsp;名：</div>
+                <div class="cell-right">
+                    <input type="text" name="username" class="cell-input" placeholder="请输入您的密码" autocomplete="off" />
+                </div>
+            </div>
+                <div class="cell-item">
+                    <div class="cell-left">所在地：</div>
+                    <div class="cell-right cell-arrow">
+                        <input type="text" name="useraddress" class="cell-input" readonly id="J_Address" placeholder="请选择收货地址">
+                    </div>
+                </div>
+            <div class="cell-item">
+                <div class="cell-left">详细住址：</div>
+                <div class="cell-right">
+                    <input type="text" name="useradview" class="cell-input" placeholder="请输入您的详细住址" autocomplete="off" />
+                </div>
+            </div>
+        </div>
+        <div class="butcenter">
+            <button type="button" class="btn-block btn-primary" id="but_address">添加</button>
+        </div>
+
+    </section>
+
+</section>
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.citys.js"></script>
+<script src="/public/index/css/ydui.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    /**
+     * 默认调用
+     */
+    !function () {
+        var $target = $('#J_Address');
+
+        $target.citySelect();
+
+        $target.on('click', function (event) {
+            event.stopPropagation();
+            $target.citySelect('open');
+        });
+
+        $target.on('done.ydui.cityselect', function (ret) {
+            $(this).val(ret.provance + ' ' + ret.city + ' ' + ret.area);
+        });
+    }();
+    /**
+     * 设置默认值
+     */
+    !function () {
+        var $target = $('#J_Address2');
+
+        $target.citySelect({
+            provance: '新疆',
+            city: '乌鲁木齐市',
+            area: '天山区'
+        });
+
+        $target.on('click', function (event) {
+            event.stopPropagation();
+            $target.citySelect('open');
+        });
+
+        $target.on('done.ydui.cityselect', function (ret) {
+            $(this).val(ret.provance + ' ' + ret.city + ' ' + ret.area);
+        });
+    }();
+    $("#but_address").click(function () {
+        !function (win, $) {
+            var dialog = win.YDUI.dialog;
+            var user=$.cookie('userphone'),
+                userphone=$("input[name='userphone']").val(),
+                username=$("input[name='username']").val(),
+                useraddress=$("input[name='useraddress']").val(),
+                useradview=$("input[name='useradview']").val();
+            $.post("/add_address", {user:user,userphone:userphone,username:username,useraddress:useraddress+useradview}, function (result) {
+                if (result == 200) {
+                    dialog.toast('地址添加成功！', 'success', 2000,function(){
+                        location.href="/address";
+                    });
+                } else {
+                    dialog.toast('地址添加失败，请重新操作', 'none', 2000);
+                }
+            });
+
+        }(window, jQuery);
+    });
+</script>
+</body>
+</html>

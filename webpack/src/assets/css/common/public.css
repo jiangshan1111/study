@@ -1,0 +1,8 @@
+@import '../index.css';
+*{
+  padding: 0;
+}
+html{
+  background: red;
+  transform: rotate(60deg);
+}

@@ -1,0 +1,335 @@
+1.react 生命周期
+componentWillMount 组件挂载前
+   属性能找到（例如this.props，states） dom找不到
+componentDidMount  组件挂载后
+componentWillUpdate  组件更新前
+componentDidUpdate  组件更新后
+componentWillUnMount  组件卸载前
+
+
+2.react 常用方法
+  阻止事件冒泡  e.nativeEvent.stopImmediatePropagation()
+
+
+3.react 表单
+  input(text) 加上 value='' 受控 无法更改
+  input(text) 加上 defaultValue='123' 不受控 可以更改
+  input(checkbox) 加上 checked 受控 无法更改
+  input(checkbox) 加上 defaultChecked 不受控 可以更改
+  给input 加上ref = 'xxx'  可以通过 this.refs.xxx.value 来获取input输入值
+
+4.react 函数
+  函数允许调用组件 组件也允许调用函数
+  1.function clock(){
+    let c = <div>{new Date()}</div>
+    ReactDom.render(c,app)
+  }
+  setInterval(clock,1000)
+  2.function c(){
+    return 'hello'
+  }
+  ReactDom.render(<div>{c()}</div>,app)
+
+
+5.组件重复调用（父子组件）(父子组件之间通信 可以通过生命周期来 判断父组件值改变是否改变子组件的值)
+  class Child extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        a: ''
+      }
+    }
+    componentWillMount () {
+      this.setState({
+        a: this.props.a
+      })
+    }
+    render () {
+      return <div>{this.state.a}</div>
+    }
+  }
+  class Parent extends React.Component {
+    render () {
+      return <div>
+        <Child a='111' />
+        <Child a='1112' />
+        <p>222</p>
+      </div>
+    }
+  }
+  ReactDOM.render(
+    <Parent />,
+    document.getElementById('root')
+  )
+
+  子组件拿父组件的值
+  <Child a={父组件的state} />
+  子组件里调用 this.props.a  默认情况会同步改变 不想改变的话通过生命周期和state来控制
+
+  父组件拿子组件的数据 通过函数
+  <Child a={父组件的函数b，同时bind(this)} />
+  子组合里执行this.props.a函数 传值
+  父组件函数b 取值 赋值给父组件
+
+
+6.react Tab选项卡
+  在DOM上绑定类似Value属性 用data-  例如data-MyIndex
+  选项卡具体代码见 tab文件夹
+
+7.百度JSONP
+  https://www.baidu.com/sugrec?prod=pc&'wd'=1&cb=jiangshan
+
+8.webpack
+ a.入口，出口
+ b.loader(加载器)
+ c.plugins(插件)
+ touch webpack.config.js 新建一个js
+ 执行webpack 
+ 命令webpack运行  命令webpack -w(watch) 监听webpack 实时打包
+ 命令webpack -p压缩打包  命令webpack -pw(watch) 监听webpack 压缩打包实时打包
+ 导出值
+ export {a,b}
+ 导出对象
+ export default{
+   a:1,
+   b:2
+ }
+ 导入值
+ import {a,b as kkkk} from './a'
+ 导入对象
+ import json from './a'
+
+
+9.react 脚手架
+ npm install -g create-react-app 安装react脚手架
+ create-react-app --version react版本
+
+10.react 动画
+  react-transition-group
+  npm i react-transition-group@1.2.1 下载
+  import {CSSTransitionGroup} from 'react-transition-group'  引入
+
+  dangerouslySetInnerHTML = {{__html:'abcs'}}  //类似于原生js的innerHtml
+
+  塞css
+  css(){
+    return `color:red`
+  }
+  <div dangerouslySetInnerHTML = {{__html:this.css()}}></div>
+
+
+  css(){
+   .jiangshan-enter{
+     opactity:0
+   }
+   .jiangshan-enter-active{
+     opactity:1;
+     transition:.7s
+    }
+    .jiangshan-leave{
+     opactity:1;
+    }
+    .jiangshan-leave-active{
+     opactity:0;
+     transition:.7s
+    }
+    .jiangshan-appear{
+     opactity:0;
+     background:red
+    }
+    .jiangshan-appear-active{
+     opactity:1;
+     background:yellow
+    }
+  }
+  let ODiv = [this.state.v?<div></div>:'']
+  <CSSTransitionGroup 
+    transitionName = 'jiangshan'
+    transitionEnterTimeOut={70}
+    transitionLeaveTimeOut={70}
+    transitionAppear={70}> //用标签包起来
+  {ODiv}
+  <CSSTransitionGroup/>
+  /*
+  transitionName = 'jiangshan' 自定义类名
+  transitionEnterTimeOut 可以限定 动画入场时间 如果超过了你给的参数 
+  那么将直接变成 jiangshan-enter-active{}
+  transitionLeaveTimeOut 可以限定 动画离场时间 如果超过了你给的参数 
+  那么将直接变成 jiangshan-leave-active{}
+  .jiangshan-enter{} 进入之前的样式
+  .jiangshan-enter-active{} 进入之后的样式
+  .jiangshan-leave{} 离开时的样式
+  .jiangshan-leave-active{} 离开之后的样式
+  .jiangshan-appear{} 初始动画
+  .jiangshan-appear-active{} 初始动画之后的样式
+  */
+
+
+  react-motion 插件
+  <motion style={{myLeo:spring(this.state.v?100:0)}}>
+    {({myLeo})=>{
+      <div>
+        {this.state.start}
+        <ul style={{height:myLeo}}>
+          {aLi}
+        </ul>
+      </div>
+    }}
+  </motion>
+
+11.Material UI
+  import injectTapEventPlugin from 'react-tap-event-plugin'
+  injectTapEventPlugin() //兼容移动端
+  
+  npm install @material-ui/core //下载包
+  npm install @material-ui/icons //下载图标 
+
+  var arr= [{index:1},{index:2},{index:3},{index:4}];arr.splice(2,2);console.log(arr) //删除数组得简单办法
+  var arr= [{index:1},{index:2},{index:3},{index:4}].splice(2,2);console.log(arr) //获取数组连续片段得简单办法
+
+12.ant-ui
+  ant design //http://design.alipay.com
+
+13.1 用express写接口
+  const express = require('express');
+  const server = express(');
+  server.listen(2139);
+  server.use('./book',(req,res)=>{
+    res.setHeader('Access-Control-Allow-Origin','*')//解决跨域
+    if(req.query.id == '001'){
+      res.send({ok:1})
+    }
+  })
+
+  打包后调用build的index.html
+  server.use(express.static('./'))
+
+13.react-router
+  router -SPA -单页面应用 弱点：不利于SEO优化，开发难度增加
+  官网 https://reacttraining.com/react-router
+  npm install react-router-dom
+
+  <Router>  //只能有一个根元素
+    <div>
+      <Link to='/'>首页</Link>
+      <Link to='/News'>首页1</Link>
+      <Link to='/About'>首页2</Link>
+
+      <Route exact path='/News' component={News}/> //输出暴露出的组件 exact表视精确匹配 没有exact '/News'还会匹配'/'的内容
+      <Route path='/About' component={About} />
+    </div>
+  </Router>
+
+  //根据router后不同点路径来把一个组件渲染不同的数据
+  <Router>  //只能有一个根元素
+    <div>
+      <Link to='/News/a1'>首页</Link>
+      <Link to='/News/a2'>首页1</Link>
+      <Link to='/News/a3'>首页2</Link>
+
+      <Route exact path='/News/:leo' component={News}/> 
+    </div>
+  </Router>
+  class News extends component{
+    constructor(){
+      super()
+      console.log(this.props。match.params.leo) // a1/a2/a3 就可以获取到传过来的参数
+    }
+  }
+
+14.redux //状态管理器
+  中文网
+  http://www.redux.org.cn
+
+  Action 标记type
+  Store 保存数据的地方 外界唯一能和action交流的地方 只允许有一个
+  Reducer(state,action) - 函数
+    数据 state 用Action操作数据
+                     |Reducer里的两个参数|
+  外界app.js store   ->action  ->   state  ->ui
+
+  replaceReducer ->更换一个数据源
+  getState -> 获取state
+  disPatch -> action 交流的函数
+  setState -> 重新渲染state
+  subscribe 用它去渲染 监听render
+
+  //使用
+
+  index.js
+  import { App, store } from './App';
+  function render () {
+
+    ReactDOM.render(
+      <div> </div>
+      ,
+      document.getElementById('root')
+    )
+  }
+  render()
+  store.subscribe(render)
+  //使用 store.subscribe() 来监听数据并渲染
+
+  App.js
+  import counter from './reducer'
+  import { createStore } from 'redux'
+  let store = createStore(counter)
+  class App extends Component {
+    render () {
+      return (
+        <div className="App" >
+          <ChildApp 
+            store = {store}
+          />
+        </div>
+      )
+    }
+  }
+  export { App, store };
+
+  ChildApp.js
+  class ChildApp extends Component {
+    render () {
+      let store = this.props.store
+      return (
+        <div></div>
+      )
+    }
+  }
+  在这里使用 store.getState() store.disPatch()
+
+  reducer整理
+  分块 state action reducer
+
+  combineReducers 这个东西可以合并 reducer 
+
+  import { combineReducers } from 'redux'
+  import counter from './counter'
+  /*
+  好多reducer
+  */
+  export default combineReducers({
+    counter,
+    /*
+  好多reducer
+  */
+  })
+  引用后就得使用 store.getState().xxx
+
+  把store 单独弄出来一个js 我们所有的文件都可以引用store 这样就变成通用的了
+
+  applyMiddleware - 中间键（redux中拿）
+  store = createStore(reduce,applyMiddleware(leo))
+  function leo({getState}){
+    return function(disPatch){
+      return function(action){
+        if(action.type == 'xxxx'){
+          disPatch(action)
+        }else{
+          console.log('不合法')
+        }//阻止某些事件
+      }
+    }
+  }
+
+  redux-thunk  可以强化dispatch 异步 用npm下载

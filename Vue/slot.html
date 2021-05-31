@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="xss">
+    <!-- <script>var abc = 123</script> -->
+  </div>
+  <div id="app">
+    <aaa>
+      <template name="header" #[slotname]="{msgc}">
+        <p>{{msgc}}</p>
+      </template>
+      <p>1234</p>
+      <p>1234</p>
+      <template name="footer" #footer="slotProps">
+        <p>{{slotProps}}</p>
+      </template>
+    </aaa>
+    <br>
+    <aaa>
+      <template v-slot="slotProps">
+        <p>{{slotProps.msga}}</p>
+      </template>
+    </aaa>
+  </div>
+  <template id="jiang">
+    <div>
+      <slot v-bind:msga="msga">{{msga}}</slot>
+      <slot name="header" v-bind:msgc="msgc"></slot>
+      <slot name="footer" v-bind:msgb="msgb"></slot>
+    </div>
+  </template>
+  <script src="https://lib.baomitu.com/vue/2.6.0/vue.js"></script>
+  <!-- <script  src="https://lib.baomitu.com/vue/1.0.0/vue.js"></script> -->
+  <script>
+    console.log(Vue)
+    var jiangshan = Vue.extend({
+      data:function(){
+        return{
+          a:111,
+          msga:123334,
+          msgb:1233345,
+          msgc:'aaa',
+        }
+      },
+      template:'#jiang'
+    })
+    new Vue({
+      el:'#app',
+      data:{
+        msg:'123',
+        slotname:'header'
+      },
+      components:{
+        aaa:jiangshan
+      }
+    })
+  </script>
+</body>
+</html>

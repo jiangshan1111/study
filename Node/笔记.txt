@@ -1,0 +1,1282 @@
+一、nodejs的基础知识
+  node.js是一个javascript运行环境，简单得说就是运行在服务端的javascript
+
+  1.运行原理
+    不仅仅在实现一个应用，同时还实现了整个HTTP服务器
+
+  2.创建应用
+    2.1 引入required模块
+      const http = require('http'); //引入模块
+
+      //文件
+      const fs = require('fs');
+      var data = fs.readFileSync('input.txt');
+      console.log(data.toString())  //读取到对应内容
+
+    2.2 创建服务器
+    2.3 接受请求与响应请求
+      http.createServer(function (request, response) {
+        response.writeHead(200, {
+          'Content-Type': 'text/plain' //无格式文件
+        }); //发送头部
+
+        response.end('jiangshan'); //最后发送的值
+      }) //创建服务
+        .listen('1234');//监听
+
+  3.REPL
+    表示的是电脑的环境
+    自带了交互式解释器
+    读取（read） - 读取用户输入
+    执行（eval） - 执行输入的数据结构
+    打印（print） - 输出结果
+    循环（loop） - 循环操作以上步骤直到用户两次按下ctrl-c退出
+
+      输入 node 进入node操作环境
+      3.1 简单的表达式运算
+        1+1
+
+      3.2 使用变量
+        用 var 声明
+        var x=4
+
+      3.3 多行表达式
+        for(){ 来打开一个多行编辑器
+        }来结束 
+        和正常写代码一样 {开始多行 }来结束 
+
+      3.4 下划线（_）变量
+        _变量可以把表达式的值赋值到当前变量
+        var x = 5
+        var y = 10
+        x+y //15
+        var sum = _ //15
+
+  4.nodeJs 回调函数
+    Node的所有API都支持回调函数
+    I/O 输入输出
+
+    //读取文件
+    //非阻塞 （不需要按顺序）
+    fs.readFile('input.txt', function (err, data) {
+      if (err) return console.log(err);
+      console.log(data.toString())
+    }) 
+    console.log('end')
+
+    
+    //阻塞（按顺序）
+    // var data = fs.readFileSync('input.txt'); //阻塞
+    // console.log(data.toString())
+    // console.log('end')
+
+  5.事件循环
+    5.1 循环机制
+      是单线程单进程的，通过事件和回调支持并发，性能很高
+      所有的事件机制都是用观察者模式实现
+      每个异步事件都生成一个事件观察者，如果有事件发生就调用该回调
+
+
+    5.2 事件驱动程序、
+      当webServer接收到请求，就把它关闭然后进行处理，然后去服务下一个web请求
+      当这个请求完成，她就被放回处理队列，当到达队列开头，这个结果被返回给用户。
+
+    5.3 简单范例
+
+      const events = require('events'); //引入events模块
+      const eventEmitter = new events.EventEmitter(); //创建实例化对象
+      const connectHandler = function connected () {
+        console.log('连接成功！')
+        eventEmitter.emit('data_received'); //触发
+      }
+      eventEmitter.on('connection', connectHandler); //创建事件
+      eventEmitter.on('data_received', function () {
+        console.log('数据接收成功！');
+      }); //创建事件
+      eventEmitter.emit('connection')//触发
+      console.log('程序结束');
+
+    5.4 node应用程序是如何工作的
+      执行异步操作的函数将回调函数作为最后一个参数，回调函数接收错误对象作为第一个参数。
+      
+  6.EventEmitter
+    6.1 EventEmitter类
+      nodeJs所有的异步操作在完成时都会发送一个事件到事件队列。
+      nodeJs里面的所有对象都会分发事件：一个net.server对象会在每次有新连接
+      时分发一个事件，一个fs.readStream对象会在文件被打开的时候发出一个事件。
+      所有这些产生事件的对象都是events.EventEmitter的实例。
+
+      events模块只提供了一个对象：events.EventEmitter
+      EventEmitter的核心就是事件触发与事件监听器的封装。
+      EventEmitter对象如果在实例化时发生错误，会触发error事件。
+      当添加新的监听器时，newListener事件会触发，当监听器被移除时，
+      removeListener事件被触发。
+
+      EventEmitter支持多个事件监听器
+      eventEmitter.on('data_received', function (a1,a2) {
+        console.log('数据接收成功！',a1,a2);
+      }); //创建事件
+      eventEmitter.on('data_received', function (a1,a2) {
+        console.log('数据接收成功23！',a1,a2);
+      }); //创建事件1
+      eventEmitter.emit('data_received','aa1','aa2')//触发
+      //数据接收成功！ aa1 aa2
+      //数据接收成功23！ aa1 aa2
+
+
+    6.2 EventEmitter常用方法
+      addListener 添加一个方法到监听器数组的尾部
+      on
+      once 单词监听器 只会触发一次 然后立即解除
+      removeListener
+      removeAllListener
+      setMaxListeners 如果超过10个会报错 用于提高监听器的数量
+      emit 
+      listeners 返回指定事件的监听器数组
+
+      //类方法
+      listenerCount()
+        const eventListeners = require('events').EventEmitter.listenerCount(eventEmitter,监听器名字);
+        console.log(eventListeners)
+        eventEmitter.emit(监听器名字)
+
+    6.3 error事件
+      一般要为会触发error事件的对象设置监听器，避免遇到错误后整个程序崩溃
+
+    6.4 继承 EventEmitter
+      只要时支持事件响应的核心模块都是继承EventEmitter的子类
+      如fs,net,http
+
+  7.Stream
+    是一个抽象接口，很多对象实现了这个接口，例如http发起请求的request
+
+    所有的Stream对象都是EventEmitter的实例；
+    常用事件：
+      data 当有数据可读时触发
+      end 没有更多的数据可读时触发
+      error 在接收和写入过程中发生错误时触发
+      finish 所有数据已被写入到底层系统时触发
+
+    四种流类型
+      readable 可读
+      writable 可写
+      Duplex 可读可写
+      transform 操作被写入数据，然后读出结果
+
+    从流中读取数据 （createReadStream）
+      const fs = require('fs');
+      var data = '';
+      const readStream = fs.createReadStream('input.txt');
+      // readStream.setEncoding('UTF8'); //转成中文
+      readStream.on('data', function (chunk) {
+        data += chunk.toString() //转成中文
+      });
+      readStream.on('end', function () {
+        console.log(data)
+      });
+      readStream.on('error', function (err) {
+        console.log(err.stack)
+      });
+
+    写入流（createWriteStream）
+      const fs = require('fs');
+      var data = '写入xxxx';
+      const writeStream = fs.createWriteStream('input1.txt');
+      writeStream.write(data, 'utf8')
+      writeStream.end()
+      writeStream.on('finish', function () {
+        console.log('写入完成！')
+      })
+      writeStream.on('error', function (err) {
+        console.log(err.stack)
+      })
+
+    管道流（pipe）
+      提供了一个输出流到输入流的机制。通常我们用于从一个流中获取数据并将数据
+      传递到另外一个流中。
+      const fs = require('fs')
+      const readStream = fs.createReadStream('input.txt');
+      const writeStream = fs.createWriteStream('output.txt');
+      readStream.pipe(writeStream)
+      console.log('完成')
+
+
+    链式流
+      通过连接输出流到另外一个流并创建多个流操作链的机制。链式流一般用于管道操作
+      压缩和解压
+      //压缩
+      const fs = require('fs');
+      const zlib = require('zlib');//压缩
+      fs.createReadStream('input.txt')
+        .pipe(zlib.createGzip())
+        .pipe(fs.createWriteStream('input.txt.gz'))
+      console.log('完成')
+
+      //解压
+      const fs = require('fs');
+      const zlib = require('zlib');//压缩
+      fs.createReadStream('input.txt.gz')
+        .pipe(zlib.createGunzip())
+        .pipe(fs.createWriteStream('input23.txt'))
+      console.log('完成')
+
+  8.Buffer
+    8.1 创建Buffer类
+      该类专门用来创建一个存放二进制数据的缓存区
+      一个Buffer类似于一个整数数组，但他对应于V8堆内存之外的一块原始内存
+      var bur = new Buffer.alloc(10) //创建长度为10字节且用0填充的Buffer实例
+      var bur = new Buffer.alloc(10,1) //创建长度为10字节且用0X1填充的Buffer实例
+      var bur = new Buffer.allocUnsafe(10); //创建长度为10字节且未初始化的的Buffer实例
+      var bur = new Buffer.from([10,20,30,40,50]) //通过给定的数组创建Buffer实例
+      var bur = new Buffer.from('www.xxx.com','utf-8') //通过一个字符串创建Buffer实例,默认是utf-8
+
+
+    8.2 写入缓冲区
+      bur.write(string[,offset[,length]][,encoding])
+
+      string  - 写入缓冲区的字符串
+      offset  - 缓冲区开始写入的索引值，默认为0
+      length  - 写入的字节数，默认为 buffer.length
+      encoding - 使用的编码。默认为utf-8
+
+      返回值
+      返回实际写入的大小.如果buffer空间不足，则只会写入部分字符串
+
+      var buf = new Buffer.from('www.xxx.com', 'utf-8')
+      len = buf.write('hello,123')
+      console.log(len);  //8
+
+    8.3 从缓冲区读取数据
+      buf.toString([encoding[, start[, end]]])
+      encoding - 使用的编码。默认为 'utf8' 。
+      start - 指定开始读取的索引位置，默认为 0。
+      end - 结束位置，默认为缓冲区的末尾。
+
+      返回值
+      解码缓冲区数据并使用指定的编码返回字符串。
+
+      var buf = new Buffer.from('www.xxx.com', 'utf-8') 
+      console.log(buf.toString(undefined, 0, 5));  //www.x
+
+    8.4 将Buffer转换为JSON对
+      buf.toJSON()
+      JSON.stringify() 会隐式地调用该 toJSON()
+
+      返回值
+      返回 JSON 对象。
+
+      const buf = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5]);
+      const json = JSON.stringify(buf);
+
+      // 输出: {"type":"Buffer","data":[1,2,3,4,5]}
+      console.log(json);
+
+      const copy = JSON.parse(json, (key, value) => {
+        return value && value.type === 'Buffer' ?
+          Buffer.from(value.data) :
+          value;
+      });
+
+      // 输出: <Buffer 01 02 03 04 05>
+      console.log(copy);
+
+    8.5 缓冲区合并
+      Buffer.concat(list[, totalLength])
+
+      list - 用于合并的 Buffer 对象数组列表。
+      totalLength - 指定合并后Buffer对象的总长度。
+
+      返回值
+      返回一个多个成员合并的新 Buffer 对象。
+    
+      var buffer1 = Buffer.from(('菜鸟教程'));
+      var buffer2 = Buffer.from(('www.runoob.com'));
+      var buffer3 = Buffer.concat([buffer1,buffer2]);
+      console.log("buffer3 内容: " + buffer3.toString());//buffer3 内容: 菜鸟教程www.runoob.com
+
+
+    8.6 缓冲区比较
+      就像遍历整个长的数组，比较第i个元素的大小，一但发现一个大的或者小的，则退出循环，得出结论。
+      buf.compare(otherBuffer);
+
+      otherBuffer - 与 buf 对象比较的另外一个 Buffer 对象。
+
+      返回值
+      返回一个数字，表示 buf 在 otherBuffer 之前，之后或相同。
+
+
+      var buffer1 = Buffer.from('ABC');
+      var buffer2 = Buffer.from('ABCD');
+      var result = buffer1.compare(buffer2);
+
+      if(result < 0) {
+        console.log(buffer1 + " 在 " + buffer2 + "之前");
+      }else if(result == 0){
+        console.log(buffer1 + " 与 " + buffer2 + "相同");
+      }else {
+        console.log(buffer1 + " 在 " + buffer2 + "之后");
+      }
+      //ABC在ABCD之前
+
+    8.7 拷贝缓冲区
+      buf.copy(targetBuffer[, targetStart[, sourceStart[, sourceEnd]]])
+
+      targetBuffer - 要拷贝的 Buffer 对象。
+      targetStart - 数字, 可选, 默认: 0
+      sourceStart - 数字, 可选, 默认: 0
+      sourceEnd - 数字, 可选, 默认: buffer.length
+      
+      返回值
+      没有返回值。
+
+      var buf1 = Buffer.from('abcdefghijkl');
+      var buf2 = Buffer.from('RUNOOB');
+
+      //将 buf2 插入到 buf1 指定位置上
+      buf2.copy(buf1, 2);
+
+      console.log(buf1.toString()); // abRUNOOBijkl
+
+    8.8 缓冲区裁剪
+      buf.slice([start[, end]])
+
+      start - 数字, 可选, 默认: 0
+      end - 数字, 可选, 默认: buffer.length
+
+      返回值
+      返回一个新的缓冲区，它和旧缓冲区指向同一块内存，但是从索引 start 到 end 的位置剪切。
+
+    8.9 缓冲区长度
+      buf.length;
+
+    8.10 方法参考手册
+      https://www.runoob.com/nodejs/nodejs-buffer.html
+  
+  9.nodeJs模块系统
+    9.1创建模块
+      Node.js 提供了 exports 和 require 两个对象，其中 exports 是模块公开的接口，require 用于从外部获取一个模块的接口，即所获取模块的 exports 对象。
+      
+      //hello.js
+      exports.world = function(){
+        console.log('hello world')
+      }
+
+      //引入
+      var hello = require('./hello')
+      hello.world()
+
+
+      //或者
+
+      //hello.js
+      function Hello(){
+        xxxx
+      }
+      module.exports = Hello
+
+      //引入
+      var Hello = require('./hello')
+      hello = new Hello()
+
+
+    9.2服务端模块
+      原生模块：http,fs,path
+      http
+
+  10.nodeJs函数
+    在 JavaScript中，一个函数可以作为另一个函数的参数。我们可以先定义一个函数，然后传递，也可以在传递参数的地方直接定义函数。
+    var http = require("http");
+
+    function onRequest(request, response) {
+      response.writeHead(200, {"Content-Type": "text/plain"});
+      response.write("Hello World");
+      response.end();
+    }
+
+    http.createServer(onRequest).listen(8888);
+
+  11.nodeJs路由
+    我们需要为路由提供请求的URL和其它需要的get和post参数，然后路由需要根据这些数据
+    来执行相应的代码。
+
+    我们需要的所有数据都会包含在request对象中，该对象作为onRequest回调函数的第一个参数传递。
+    但是为了解析这些数据，我们需要额外的Nodejs模块，他们分别是url和query string模块。
+
+    var http = require('http');
+    var url = require('url');
+    var fs = require('fs');
+
+    var host = '127.0.0.1';
+    var port = '8888'
+
+    http.createServer(function (req, res) {
+      console.log(req)
+      var pathname = url.parse(req.url).pathname
+      console.log(pathname)
+      function showPager (path, status) {
+        var content = fs.readFileSync(path);
+        res.writeHead(status, { 'Content-type': 'text/html;charset=utf-8' })
+        res.write(content)
+        res.end()
+      }
+      switch (pathname) {
+        case '/index':
+          showPager('./index.html', 200)
+          break;
+        case '/about':
+          showPager('./about.html', 200)
+          break;
+        default:
+          showPager('./404.html', 200)
+          break;
+      }
+    }).listen(port, host)
+
+  12.nodeJs全局系列
+      JavaScript 中有一个特殊的对象，称为全局对象（Global Object），它及其所有属性都可以在程序的任何地方访问，即全局变量。
+      在浏览器 JavaScript 中，通常 window 是全局对象， 而 Node.js 中的全局对象是 global，所有全局变量（除了 global 本身以外）都是 global 对象的属性。
+
+      全局对象与全局变量
+
+      __filename
+        __filename 表示当前正在执行的脚本的文件名。它将输出文件所在位置的绝对路径，且和命令行参数所指定的文件名不一定相同。 如果在模块中，返回的值是模块文件的路径。
+
+      __dirname
+        __dirname 表示当前执行脚本所在的目录。
+
+      setTimeout(cb, ms)
+        setTimeout(cb, ms) 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。：setTimeout() 只执行一次指定函数。
+        返回一个代表定时器的句柄值。
+
+      clearTimeout(t)
+        clearTimeout( t ) 全局函数用于停止一个之前通过 setTimeout() 创建的定时器。 参数 t 是通过 setTimeout() 函数创建的定时器。
+
+      setInterval(cb, ms)
+        setInterval(cb, ms) 全局函数在指定的毫秒(ms)数后执行指定函数(cb)。
+        返回一个代表定时器的句柄值。可以使用 clearInterval(t) 函数来清除定时器。
+        setInterval() 方法会不停地调用函数，直到 clearInterval() 被调用或窗口被关闭。
+
+      console
+        console 用于提供控制台标准输出，它是由 Internet Explorer 的 JScript 引擎提供的调试工具，后来逐渐成为浏览器的实施标准。
+        Node.js 沿用了这个标准，提供与习惯行为一致的 console 对象，用于向标准输出流（stdout）或标准错误流（stderr）输出字符。
+
+      process
+        process 是一个全局变量，即 global 对象的属性。
+        它用于描述当前Node.js 进程状态的对象，提供了一个与操作系统的简单接口。通常在你写本地命令行程序的时候，少不了要 和它打交道。下面将会介绍 process 对象的一些最常用的成员方法。
+        
+        exit
+        当进程准备退出时触发。
+
+
+        beforeExit
+        当 node 清空事件循环，并且没有其他安排时触发这个事件。通常来说，当没有进程安排时 node 退出，但是 'beforeExit' 的监听器可以异步调用，这样 node 就会继续执行。
+
+        uncaughtException
+        当一个异常冒泡回到事件循环，触发这个事件。如果给异常添加了监视器，默认的操作（打印堆栈跟踪信息并退出）就不会发生。
+
+        Signal 事件
+        当进程接收到信号时就触发。信号列表详见标准的 POSIX 信号名，如 SIGINT、SIGUSR1 等。
+
+        使用时
+        process.on('exit', function (code) { });
+
+
+      Process 属性
+        stdout
+        标准输出流。
+
+        stderr
+        标准错误流。
+
+        stdin
+        标准输入流。
+
+        argv
+        argv 属性返回一个数组，由命令行执行脚本时的各个参数组成。它的第一个成员总是node，第二个成员是脚本文件名，其余成员是脚本文件的参数。
+
+        execPath
+        返回执行当前脚本的 Node 二进制文件的绝对路径。
+
+        execArgv
+        返回一个数组，成员是命令行下执行脚本时，在Node可执行文件与脚本文件之间的命令行参数。
+
+        env
+        返回一个对象，成员为当前 shell 的环境变量
+
+        exitCode
+        进程退出时的代码，如果进程优通过 process.exit() 退出，不需要指定退出码。
+
+        version
+        Node 的版本，比如v0.10.18。
+
+        versions
+        一个属性，包含了 node 的版本和依赖.
+
+        config
+        一个包含用来编译当前 node 执行文件的 javascript 配置选项的对象。它与运行 ./configure 脚本生成的 "config.gypi" 文件相同。
+
+        pid
+        当前进程的进程号。
+
+        title
+        进程名，默认值为"node"，可以自定义该值。
+
+        arch
+        当前 CPU 的架构：'arm'、'ia32' 或者 'x64'。
+
+        platform
+        运行程序所在的平台系统 'darwin', 'freebsd', 'linux', 'sunos' 或 'win32'
+
+        mainModule
+        require.main 的备选方法。不同点，如果主模块在运行时改变，require.main可能会继续返回老的模块。可以认为，这两者引用了同一个模块。
+        
+        使用时 process.mainModule
+
+  13.常用工具
+    util 是一个Node.js 核心模块，提供常用函数的集合，用于弥补核心 JavaScript 的功能 过于精简的不足。
+    util.callbackify()
+      将 async 异步函数（或者一个返回值为 Promise 的函数）转换成遵循异常优先的回调风格的函数，例如将 (err, value) => ... 回调作为最后一个参数。 在回调函数中，第一个参数为拒绝的原因（如果 Promise 解决，则为 null），第二个参数则是解决的值。
+        const util = require('util');
+        async function fn() {
+          return 'hello world';
+        }
+        const callbackFunction = util.callbackify(fn);
+        callbackFunction((err, ret) => {
+          if (err) throw err;
+          console.log(ret);
+        });
+
+    util.inherits
+      util.inherits(constructor, superConstructor) 是一个实现对象间原型继承的函数。
+      JavaScript 的面向对象特性是基于原型的，与常见的基于类的不同。JavaScript 没有提供对象继承的语言级别特性，而是通过原型复制来实现的。
+        var util = require('util'); 
+        function Base() { 
+            this.name = 'base'; 
+            this.base = 1991; 
+            this.sayHello = function() { 
+            console.log('Hello ' + this.name); 
+            }; 
+        } 
+        Base.prototype.showName = function() { 
+            console.log(this.name);
+        }; 
+        function Sub() { 
+            this.name = 'sub'; 
+        } 
+        util.inherits(Sub, Base); 
+        var objBase = new Base(); 
+        objBase.showName(); 
+        objBase.sayHello(); 
+        console.log(objBase); 
+        var objSub = new Sub(); 
+        objSub.showName(); 
+        //objSub.sayHello(); 
+        console.log(objSub); 
+
+    util.inspect
+      是一个将任意对象转换 为字符串的方法，通常用于调试和错误输出。它至少接受一个参数 object，即要转换的对象。
+      showHidden 是一个可选参数，如果值为 true，将会输出更多隐藏信息。
+      depth 表示最大递归的层数，如果对象很复杂，你可以指定层数以控制输出信息的多 少。如果不指定depth，默认会递归 2 层，指定为 null 表示将不限递归层数完整遍历对象。 如果 colors 值为 true，输出格式将会以 ANSI 颜色编码，通常用于在终端显示更漂亮 的效果。
+      特别要指出的是，util.inspect 并不会简单地直接把对象转换为字符串，即使该对 象定义了 toString 方法也不会调用。
+
+
+    util.isArray(object)
+      如果给定的参数 "object" 是一个数组返回 true，否则返回 false。
+
+    util.isRegExp(object)
+      如果给定的参数 "object" 是一个正则表达式返回true，否则返回false。
+
+    util.isDate(object)
+      如果给定的参数 "object" 是一个日期返回true，否则返回false
+
+  14.文件系统
+    1.文件系统
+      Node.js 提供一组类似 UNIX（POSIX）标准的文件操作API。 Node 导入文件系统模块(fs)语法如下所示：
+      var fs = require("fs")
+
+    2.同步和异步
+      Node.js 文件系统（fs 模块）模块中的方法均有异步和同步版本，例如读取文件内容的函数有异步的 fs.readFile() 和同步的 fs.readFileSync()。
+
+      异步的方法函数最后一个参数为回调函数，回调函数的第一个参数包含了错误信息(error)。
+
+      建议大家使用异步方法，比起同步，异步方法性能更高，速度更快，而且没有阻塞。
+
+      var fs = require("fs");
+      // 异步读取
+      fs.readFile('input.txt', function (err, data) {
+        if (err) {
+            return console.error(err);
+        }
+        console.log("异步读取: " + data.toString());
+      });
+
+      // 同步读取
+      var data = fs.readFileSync('input.txt');
+      console.log("同步读取: " + data.toString());
+      console.log("程序执行完毕。");
+
+    3.打开文件
+      fs.open(path, flags[, mode], callback)
+
+      path - 文件的路径。
+
+      flags - 文件打开的行为。具体值详见下文。
+
+      mode - 设置文件模式(权限)，文件创建默认权限为 0666(可读，可写)。
+
+      callback - 回调函数，带有两个参数如：callback(err, fd)。
+
+      var fs = require("fs");
+      // 异步打开文件
+      console.log("准备打开文件！");
+      fs.open('input.txt', 'r+', function(err, fd) {
+        if (err) {
+            return console.error(err);
+        }
+        console.log("文件打开成功！");     
+      });
+
+
+    4.获取文件信息
+      fs.stat(path, callback)
+      path - 文件路径。
+
+      callback - 回调函数，带有两个参数如：(err, stats), stats 是 fs.Stats 对象。
+
+      fs.stat(path)执行后，会将stats类的实例返回给其回调函数。可以通过stats类中的提供方法判断文件的相关属性。例如判断是否为文件：
+      
+      var fs = require('fs');
+
+      fs.stat('/Users/liuht/code/itbilu/demo/fs.js', function (err, stats) {
+          console.log(stats.isFile());         //true
+      })
+
+      stats.isFile()	如果是文件返回 true，否则返回 false。
+      stats.isDirectory()	如果是目录返回 true，否则返回 false。
+      stats.isBlockDevice()	如果是块设备返回 true，否则返回 false。
+      stats.isCharacterDevice()	如果是字符设备返回 true，否则返回 false。
+      stats.isSymbolicLink()	如果是软链接返回 true，否则返回 false。
+      stats.isFIFO()	如果是FIFO，返回true，否则返回 false。FIFO是UNIX中的一种特殊类型的命令管道。
+      stats.isSocket()	如果是 Socket 返回 true，否则返回 false。
+
+    5.写入文件
+      fs.writeFile(file, data[, options], callback)
+      writeFile 直接打开文件默认是 w 模式，所以如果文件存在，该方法写入的内容会覆盖旧的文件内容。
+      file - 文件名或文件描述符。
+
+      data - 要写入文件的数据，可以是 String(字符串) 或 Buffer(缓冲) 对象。
+
+      options - 该参数是一个对象，包含 {encoding, mode, flag}。默认编码为 utf8, 模式为 0666 ， flag 为 'w'
+
+      callback - 回调函数，回调函数只包含错误信息参数(err)，在写入失败时返回。
+
+      var fs = require("fs");
+      console.log("准备写入文件");
+      fs.writeFile('input.txt', '我是通 过fs.writeFile 写入文件的内容',  function(err) {
+        if (err) {
+            return console.error(err);
+        }
+        console.log("数据写入成功！");
+        console.log("--------我是分割线-------------")
+        console.log("读取写入的数据！");
+        fs.readFile('input.txt', function (err, data) {
+            if (err) {
+              return console.error(err);
+            }
+            console.log("异步读取文件数据: " + data.toString());
+        });
+      });
+
+    6.读取文件
+      fs.read(fd, buffer, offset, length, position, callback)
+
+      fd - 通过 fs.open() 方法返回的文件描述符。
+
+      buffer - 数据写入的缓冲区。
+
+      offset - 缓冲区写入的写入偏移量。
+
+      length - 要从文件中读取的字节数。
+
+      position - 文件读取的起始位置，如果 position 的值为 null，则会从当前文件指针的位置读取。
+
+      callback - 回调函数，有三个参数err, bytesRead, buffer，err 为错误信息， bytesRead 表示读取的字节数，buffer 为缓冲区对象。
+
+    7.关闭文件
+      fs.close(fd, callback)
+
+      fd - 通过 fs.open() 方法返回的文件描述符。
+
+      callback - 回调函数，没有参数。
+
+        var fs = require("fs");
+        var buf = new Buffer.alloc(1024);
+
+        console.log("准备打开文件！");
+        fs.open('input.txt', 'r+', function(err, fd) {
+          if (err) {
+              return console.error(err);
+          }
+          console.log("文件打开成功！");
+          console.log("准备读取文件！");
+          fs.read(fd, buf, 0, buf.length, 0, function(err, bytes){
+              if (err){
+                console.log(err);
+              }
+
+              // 仅输出读取的字节
+              if(bytes > 0){
+                console.log(buf.slice(0, bytes).toString());
+              }
+
+              // 关闭文件
+              fs.close(fd, function(err){
+                if (err){
+                    console.log(err);
+                } 
+                console.log("文件关闭成功");
+              });
+          });
+        });
+
+    8.截取文件
+      fs.ftruncate(fd, len, callback)
+
+      fd - 通过 fs.open() 方法返回的文件描述符。
+
+      len - 文件内容截取的长度。
+
+      callback - 回调函数，没有参数。
+
+    9.删除文件
+      fs.unlink(path, callback)
+
+      path - 文件路径。
+
+      callback - 回调函数，没有参数。
+
+    10.创建目录
+      fs.mkdir(path[, options], callback)
+
+      path - 文件路径。
+
+      options 参数可以是：
+
+        recursive - 是否以递归的方式创建目录，默认为 false。
+        mode - 设置目录权限，默认为 0777。
+
+      callback - 回调函数，没有参数。
+
+    11.读取目录
+      fs.readdir(path, callback)
+
+      path - 文件路径。
+
+      callback - 回调函数，回调函数带有两个参数err, files，err 为错误信息，files 为 目录下的文件数组列表。\
+
+      var fs = require("fs");
+      console.log("查看 /tmp 目录");
+      fs.readdir("/tmp/",function(err, files){
+        if (err) {
+            return console.error(err);
+        }
+        files.forEach( function (file){
+            console.log( file );
+        });
+      });
+
+    12.删除目录
+      fs.rmdir(path, callback)
+
+      path - 文件路径。
+
+      callback - 回调函数，没有参数。
+
+    13.文件模块方法参考手册
+      
+
+    14.补充一个知识点
+  
+  15.get和post请求（getPost文件夹）
+    get 
+        由于GET请求直接被嵌入在路径中，URL是完整的请求路径，包括了?后面的部分，因此你可以手动解析后面的内容作为GET请求的参数。
+        node.js 中 url 模块中的 parse 函数提供了这个功能。
+        请求可以使用util.parse(req.url,true)来获取
+        res.writeHead(200, {'Content-Type': 'text/plain;charset=utf-8'}); //charset前面要用;来拼接不是《
+    
+    post 
+        POST 请求的内容全部的都在请求体中，http.ServerRequest 并没有一个属性内容为请求体，原因是等待请求体传输可能是一件耗时的工作。
+        比如上传文件，而很多时候我们可能并不需要理会请求体的内容，恶意的POST请求会大大消耗服务器的资源，所以 node.js 默认是不会解析请求体的，当你需要的时候，需要手动来做。
+        使用querystring来获取参数
+
+
+二、express
+  express是一个简洁而灵活的nodejs web应用框架，提供一系列强大特性帮助你创建各种web应用
+  基于Ruby
+
+  1.安装express
+    npm install express --save
+
+    以下几个重要的模块是需要与express框架一起安装的：
+    body-parser -nodejs中间件，用于处理JSON，raw，text和url编码的数据
+    cookie-parser 这就是一个解析cookie的工具。通过req.cookies可以取到传过来的cookie，并把它们转成对象。
+    multer  -nodejs中间件，用于处理 enctype="multipart/form-data"的表单数据。
+
+
+  2.express框架一个简单实例
+    var express = require('express')
+    var app = express()
+
+    app.get('/', function (req, res) {
+      res.send('Hello world!')
+    })
+
+    var server = app.listen(8081, function () {
+      var host = server.address().address
+      var port = server.address().port
+
+      console.log("success",host,port)
+    })
+
+  3.请求和响应讲解
+
+    //req对象   request 对象表示 HTTP 请求，包含了请求查询字符串，参数，内容，HTTP 头部等属性
+      req.app   当callback为外部文件时，用req.app访问express的实例
+      req.baseUrl   获取路由当前安装的URL路径
+      req.body/req.cookies  获得【请求主体】/cookies
+      req.fresh/req.stale    判断请求是否还【及时有效】
+      req.hostname/req.ip  获取主机名和ip地址
+      req.originalUrl   获取原始请求URL
+      req.params：获取路由的parameters
+      req.path：获取请求路径
+      req.protocol：获取协议类型
+      req.query：获取URL的查询参数串
+      req.route：获取当前匹配的路由
+      req.subdomains：获取子域名
+      req.accepts()：检查可接受的请求的文档类型
+      req.acceptsCharsets / req.acceptsEncodings / req.acceptsLanguages：返回指定字符集的第一个可接受字符编码
+      req.get()：获取指定的HTTP请求头
+      req.is()：判断请求头Content-Type的MIME类型
+
+    //res对象   response 对象表示 HTTP 响应，即在接收到请求时向客户端发送的 HTTP 响应数据
+      res.app：同req.app一样
+      res.append()：追加指定HTTP头
+      res.set()在res.append()后将重置之前设置的头
+      
+      res.cookie(name，value [，option])：设置Cookie
+          option: 
+              domain:域名
+              expires:过期时间
+              httpOnly:通过程序将无法获取cookie信息，防止xss攻击
+              maxAge:最大失效时间
+              path:表示cookie影响到的路，如果路径不匹配，浏览器不发送这个cookie
+              secure:为true时，cookie在http中无效，在https中才有效
+              signed：表示是否签名cookie，为true时 需要用res.signedCookies而不是res
+                      .cookies访问它，被篡改的签名cookie会被服务起拒绝，并且cookie会重置
+                      为原始值
+
+      res.clearCookie()：清除Cookie
+      res.download()：传送指定路径的文件
+      res.get()：返回指定的HTTP头
+      res.json()：传送JSON响应
+      res.jsonp()：传送JSONP响应
+      res.location()：只设置响应的Location HTTP头，不设置状态码或者close response
+      res.redirect()：设置响应的Location HTTP头，并且设置状态码302
+      res.render(view,[locals],callback)：渲染一个view，同时向callback传递渲染后的字符串，如果在渲染过程中有错误发生next(err)将会被自动调用。callback将会被传入一个可能发生的错误以及渲染后的页面，这样就不会自动输出了。
+      res.send()：传送HTTP响应
+      res.sendFile(path [，options] [，fn])：传送指定路径的文件 -会自动根据文件extension设定Content-Type
+      res.set()：设置HTTP头，传入object可以一次设置多个头
+      res.status()：设置HTTP状态码
+      res.type()：设置Content-Type的MIME类型
+
+  4.路由功能
+      app.get('/', function (req, res) {
+        res.send('我是主页get请求')
+      })
+      app.post('/', function (req, res) {
+        res.send('我是主页post请求')
+      })
+      app.get('/user', function (req, res) {
+        res.send('我是个人中心get请求')
+      })
+      app.get('/ab*cd', function (req, res) {
+        res.send('正则匹配')
+      })
+      //使用静态资源
+      app.use(express.static('public))
+
+
+
+  5.get，post方法
+    见express/model1.js
+
+    //post请求需要使用 创建application/x-www-form-urlencoded编码解析
+    var bodyParser = require('body-parser') 
+    var urlencodedParser = bodyParser.urlencoded({extended:false})
+
+  6.文件上传
+    见express/model1.js
+
+  7.cookie管理
+    cookie:当访问一个页面的时候，服务起在下行http报文中，命令浏览器存储一个字符串；浏览器在
+    访问同一个域的时候，将把哲哥字符串携带到上行http请求中。第一次访问一个服务器，不可能携带
+    cookie。必须是服务器得到这次请求，在下行响应报头中，携带cookie信息，此后每一次浏览器往这个
+    服务起发出的请求，将会携带这个cookie。
+    1.cookie保存在浏览器本地
+    2.正常设置的cookie是不加密的。用户可以自由看到
+    3.用户可以删除cookie，或者禁用它。
+    4.cookie可以被篡改。
+    5.cookie可以用于攻击；
+    6.cookie存储很小。未来实际上要被localStorage替代，但是后者ie9不兼容
+
+三、mongoDB
+  1.安装mongoDB
+    面向文档存储的数据库
+    mongoDB将数据存储为一个文档，数据结构有键值（key=>value
+    ）组成。mongoDB文档类似于json对象。字段值可以包含其他文档，
+    数组以及文档数组。
+    {
+      name:'sue',
+      age:26,
+      groups:['news','sports'],
+    }
+
+    从mongoDB官网下载
+    启动
+    https://jingyan.baidu.com/article/375c8e19e2b37b25f2a229a4.html
+
+    数据库基本概念
+
+    sql术语        mongoDB术语     解释
+    database       database       数据库
+    table          collection     数据库表/集合
+    row            document       数据记录行/文档
+    column         field          数据字段/域
+    index          index          索引
+    table joins                   表连接，mongoDB不支持
+    primary key    primary key    主键，mongoDB自动将_id字段设置为主键
+
+    mongoDB数据类型
+
+    Object  ID ：Documents 自生成的 _id
+    String： 字符串，必须是utf-8
+    Boolean：布尔值，true 或者false (这里有坑哦~在我们大Python中 True False 首字母大写)
+    Integer：整数 (Int32 Int64 你们就知道有个Int就行了,一般我们用Int32)
+    Double：浮点数 (没有float类型,所有小数都是Double)
+    Arrays：数组或者列表，多个值存储到一个键 (list哦,大Python中的List哦)
+    Object：如果你学过Python的话,那么这个概念特别好理解,就是Python中的字典,这个数据类型就是字典
+    Null：空数据类型 , 一个特殊的概念,None Null
+    Timestamp：时间戳
+    Date：存储当前日期或时间unix时间格式 (我们一般不用这个Date类型,时间戳可以秒杀一切时间类型)
+
+  2.Robo 3T使用
+    users 创建用户权限
+    collections 创建表结构
+
+  3.nodejs连接mongoDB
+    cnpm install mongodb 只能用cnpm
+
+    var MongoClient = require('mongodb').MongoClient;
+    var url = "mongodb://localhost:27017/jiangshan"; //数据库地址
+    
+    MongoClient.connect(url, function(err, db) {
+      if (err) throw err;
+      var dbo = db.db("example"); //数据库名称
+      var myobj = { name: "jiangshan222", age: "24" };
+      dbo.collection("user").insertOne(myobj, function(err, res) {//user是数据表名称
+          if (err) throw err;
+          console.log("文档插入成功");
+          db.close();
+      });
+    });
+
+  4.mongodb方法
+    1.createCollection() 方法来创建集合/表
+
+      var MongoClient = require('mongodb').MongoClient;
+      var url = 'mongodb://localhost:27017/runoob';
+      MongoClient.connect(url, function (err, db) {
+          if (err) throw err;
+          console.log('数据库已创建');
+          var dbase = db.db("runoob");
+          dbase.createCollection('site', function (err, res) {
+              if (err) throw err;
+              console.log("创建集合!");
+              db.close();
+          });
+      });
+
+    2.insertOne() 插入一条数据条数据
+
+      var MongoClient = require('mongodb').MongoClient;
+      var url = "mongodb://localhost:27017/";
+      MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          var myobj = { name: "菜鸟教程", url: "www.runoob" };
+          dbo.collection("site").insertOne(myobj, function(err, res) {
+              if (err) throw err;
+              console.log("文档插入成功");
+              db.close();
+          });
+      });
+
+    3.insertMany() 插入多条数据
+
+      var MongoClient = require('mongodb').MongoClient;
+      var url = "mongodb://localhost:27017/";
+      MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          var myobj =  [
+              { name: '菜鸟工具', url: 'https://c.runoob.com', type: 'cn'},
+              { name: 'Google', url: 'https://www.google.com', type: 'en'},
+              { name: 'Facebook', url: 'https://www.google.com', type: 'en'}
+            ];
+          dbo.collection("site").insertMany(myobj, function(err, res) {
+              if (err) throw err;
+              console.log("插入的文档数量为: " + res.insertedCount);
+              db.close();
+          });
+      });
+
+    4.find() 来查找数据
+
+      var MongoClient = require('mongodb').MongoClient;
+      var url = "mongodb://localhost:27017/";
+      MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          var whereStr = {"name":'菜鸟教程'};  // 查询条件
+          dbo.collection("site").find(whereStr).toArray(function(err, result) {
+              if (err) throw err;
+              console.log(result);
+              db.close();
+          });
+      });
+
+    5.updateOne() 更新一条数据 updateMany() 更新多条数据
+
+      var MongoClient = require('mongodb').MongoClient;
+      var url = "mongodb://localhost:27017/";
+      MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          var whereStr = {"type":'en'};  // 查询条件
+          var updateStr = {$set: { "url" : "https://www.runoob.com" }};
+          dbo.collection("site").updateMany(whereStr, updateStr, function(err, res) {
+              if (err) throw err;
+              console.log(res.result.nModified + " 条文档被更新");
+              db.close();
+          });
+      });
+
+    6.deleteOne() 删除一条数据 deleteMany() 删除多条数据
+      var MongoClient = require('mongodb').MongoClient;
+      var url = "mongodb://localhost:27017/";
+      MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          var whereStr = { type: "en" };  // 查询条件
+          dbo.collection("site").deleteMany(whereStr, function(err, obj) {
+              if (err) throw err;
+              console.log(obj.result.n + " 条文档被删除");
+              db.close();
+          });
+      });
+
+    7.sort() 
+        { type: 1 }  // 按 type 字段升序
+        { type: -1 } // 按 type 字段降序
+        var MongoClient = require('mongodb').MongoClient;
+        var url = "mongodb://localhost:27017/";
+        
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("runoob");
+            var mysort = { type: 1 };
+            dbo.collection("site").find().sort(mysort).toArray(function(err, result) {
+                if (err) throw err;
+                console.log(result);
+                db.close();
+            });
+        });
+
+      8. limit() 设置指定的返回条数
+        dbo.collection("site").find().limit(2).toArray(function(err, result) {}
+
+      9.skip(): 跳过前面两条数据，读取两条数据
+        dbo.collection("site").find().skip(2).limit(2).toArray(function(err, result) {}
+
+      10.$lookup 实现左连接
+
+        var MongoClient = require('mongodb').MongoClient;
+        var url = "mongodb://127.0.0.1:27017/";
+        MongoClient.connect(url, function(err, db) {
+          if (err) throw err;
+          var dbo = db.db("runoob");
+          dbo.collection('orders').aggregate([
+            { $lookup:
+              {
+                from: 'products',            // 右集合
+                localField: 'product_id',    // 左集合 join 字段
+                foreignField: '_id',         // 右集合 join 字段
+                as: 'orderdetails'           // 新生成字段（类型array）
+              }
+            }
+            ]).toArray(function(err, res) {
+            if (err) throw err;
+            console.log(JSON.stringify(res));
+            db.close();
+          });
+        });
+
+
+        聚合管道属性
+
+          $project	指定输出文档里的字段.
+          $match	选择要处理的文档，与find()类似。
+          $limit	限制传递给下一步的文档数量。
+          $skip	跳过一定数量的文档。
+          $unwind	扩展数组，为每个数组入口生成一个输出文档。
+          $group	根据key来分组文档。
+          $sort	排序文档。
+          $geoNear	选择某个地理位置附近的的文档。
+          $out	把管道的结果写入某个集合。
+          $redact	控制特定数据的访问。
+          $lookup 多表关联（3.2版本新增）
+
+      11.drop() 删除集合
+        var MongoClient = require('mongodb').MongoClient;
+        var url = "mongodb://localhost:27017/";
+        MongoClient.connect(url, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("runoob");
+            // 删除 test 集合
+            dbo.collection("test").drop(function(err, delOK) {  // 执行成功 delOK 返回 true，否则返回 false
+                if (err) throw err;
+                if (delOK) console.log("集合已删除");
+                db.close();
+            });
+        });
+        
+      12.可以使用.then()和async/await
+        test.insertOne({ "site": "runoob.com" }).then((res) => {
+            // 查询
+            return test.find().toArray().then((arr) => {
+                console.log(arr);
+            });
+        }).then(() => {
+            // 更改
+            return test.updateMany({ "site": "runoob.com" },
+                { $set: { "site": "example.com" } });
+        }).then((res) => {
+            // 查询
+            return test.find().toArray().then((arr) => {
+                console.log(arr);
+            });
+        }).then(() => {
+            // 删除
+            return test.deleteMany({ "site": "example.com" });
+        }).then((res) => {
+            // 查询
+            return test.find().toArray().then((arr) => {
+                console.log(arr);
+            });
+        }).catch((err) => {
+            console.log("数据操作失败" + err.message);
+        }).finally(() => {
+            conn.close();
+        });
+    
+    13.findAndModify() 类似于update 这个返回更新后的值 update不返回
+      db.coll.findAndModify({
+        query:{x:"ggg"},
+        update:{$set:{"x":"gggg"}},
+        fields:{"x":1},
+        new:true,
+        upsert:true
+      })
+        query：查询语句
+        update：（和remove必须有一个，也只能存在一个）
+        fields：需要显示的字段
+        new：true：返回更新之后的值  false：返回更新前的值
+        upsert： 查询结果不存在是否新增
+
+    14.通过id查询
+      因为mongo 存的是Object(id)
+      所以需要使用mongoose.Types.ObjectId(req.body.foodid)来封装id
+
+
+三、项目实战
+  3.1小demo
+    1.创建文件夹
+    2.下载依赖
+      express cookie-parser...
+    3.配置路由
+      //server.js
+        var express = require('express');
+        var app = express();
+        var routes = require('./app/routes/index')
+        console.log(process.cwd())
+        routes(app)
+        app.listen(3000, function () {
+          console.log('success')
+        })
+
+      //routes.js
+        module.exports = function (app) {
+          app.route('/')
+            .get(function (req, res) {
+              res.sendFile(process.cwd()+'/view/index.html')
+            })
+        }
+    4.连接数据库
+
+  3.2 正式项目
+    1.页面模板制作  ydui
+    2.数据库和数据集创建
+    3.项目开发
+    4.部署到服务器
+      https://segmentfault.com/a/1190000019396521
+      4.1 下载xshell，链接服务器
+      4.2 基础安装
+        1.安装git
+          yum install git
+        2.安装node
+          是使用nvm安装的，方便以后可以切换node的版本，首先使用git将源码克隆到本地的~/.nvm目录下，并检查最新版本。
+          git clone https://github.com/cnpm/nvm.git ~/.nvm && cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`
+          然后激活NVM
+
+          echo ". ~/.nvm/nvm.sh" >> /etc/profile
+          source /etc/profile
+          然后安装node（我是安装目前的LTS版10.16.0）
+
+          nvm install v10.16.0
+          最后使用nodev10.16.0
+
+          nvm use v10.16.0
+          测试一下有没有安装成功
+
+          node -v
+          npm -v
+          如果有版本号的话，就证明安装成功了。
+          PS:这里有个小坑，你试一下输入 reboot 重启服务器？然后 node -v ？ 没了吧。每次重启服务器，都要用node use 版本号才能用node和npm，设置一下别名，这样就可以重启后直接用了
+
+          nvm alias default v10.16.0
+
+        3.上传项目
+          通过winSCP或者xftp上传项目 把项目放上去
+
+        4.运行项目
+          首先要下载pm2（pm2是啥？自己百度一下吧，我也是这么过来的）
+
+          npm install -g pm2
+          然后cd到你的express项目里面
+
+          pm2 start ./bin/www
+
+          现在还没有可以访问，还要去阿里云控制台配置一下端口(因为express默认端口是3000，所以这里只配置3000的)、
+          
+          最后访问你的 公有ip:端口号，如：123.123.123.123:3000
+

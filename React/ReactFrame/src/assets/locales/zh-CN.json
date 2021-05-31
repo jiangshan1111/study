@@ -1,0 +1,13 @@
+{
+  "login.account": "账号",
+  "login.pwd": "密码",
+  "login.submit": "登录",
+  "login.copyright": "版权所有",
+  "login.errMsg1": "账户或密码错误",
+  "login.errMsg2": "用户名不存在",
+  "login.errMsg3": "阿哦，服务器出错啦!",
+  "grid.cover.title": "栅格分析",
+  "grid.cover.content": "将零售研究提升至前所未有的高度：国土面积全面覆盖，1*1公里栅格细腻下沉，人货场大数据深入洞察，助力营销和铺货全面进入大数据时代。",
+  "grid.cover.btn": "进入栅格",
+  "SIMPLE": "这是一个 <span style='color:red'>HTML</span> 标签"
+}

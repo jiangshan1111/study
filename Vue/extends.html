@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app"  >
+    <p>{{msg}}</p>
+    
+    <aaa ref="msg" @sontofa='sonToFa1'></aaa>
+    <!-- <component   @sonToFa='sonToFa1' :is="componentA" title="kkk"></component> -->
+  </div>
+  <template id="jiang">
+    <div>
+      <h1>{{a}}{{title}}</h1>
+      <button @click="getFather">点击</button>
+    </div>
+  </template>
+  <script crossorigin="anonymous" integrity="sha384-BsohJuR1UmcDmCzWHDmbOFe5kYww52n7tWI9w3acK35v44HVjaAj73G0GD2Q/WnW" src="https://lib.baomitu.com/vue/2.0.0/vue.js"></script>
+  <!-- <script  src="https://lib.baomitu.com/vue/1.0.0/vue.js"></script> -->
+  <script>
+    var jiangshan = Vue.extend({
+      data:function(){
+        return{
+          a:111
+        }
+      },
+      // props:{
+      //   title: {
+      //     type: String,
+      //     default: 80
+      //   },
+      // },
+      props:['title'],
+      methods:{
+        getFather(){
+          this.$emit("sontofa",this.a)
+        }
+      },
+      mounted:function(){
+        console.log(this)
+      },
+      template:'#jiang'
+    })
+    new Vue({
+      el:'#app',
+      data:{
+        arr1:[{index1:1},{index1:2},{index1:11},{index1:22}],
+        str:'abcd',
+        componentA:'aaa',
+        msg:'123',
+        fil:'',
+        color:'red',
+        obj1:{
+          c:1
+        }
+      },
+      components:{
+        aaa:jiangshan
+      },
+      created(){
+        this.sonToFa1()
+          console.log(this.$refs)
+      },
+      methods: {
+        sonToFa1(val){
+          console.log(2)
+        },
+        get() {
+          this.arr1 = [{index1:2}]
+          this.str = 3
+          this.obj1.c = 3
+        }
+      },
+    })
+  </script>
+</body>
+</html>

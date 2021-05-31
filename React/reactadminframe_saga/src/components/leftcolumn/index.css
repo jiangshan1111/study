@@ -1,0 +1,8 @@
+.column-name{color:#AFB5BC;font-size:16px;width:100%;box-sizing: border-box;margin-top:10px;padding-left:30px;display:flex;justify-content: space-between;align-items: center;padding-right:30px;cursor: pointer;height:40px;white-space: nowrap;}
+.column-name.active{color:#FFFFFF;}
+.column-name.active .icon.arrow{background-image:url("../../assets/images/admin/index/up-arrow.png");background-size:100%;background-repeat: no-repeat;background-position: center;}
+.column-name .icon{width:20px;height:20px;}
+.column-name.lnk-active{background-color:#2d8cf0;height:40px;color:#FFFFFF;box-sizing: border-box;}
+.icon.arrow{background-image:url("../../assets/images/admin/index/down-arrow.png");background-size:100%;background-repeat: no-repeat;background-position: center;}
+.next-wrap{width:100%;display:none;background-color:#000000;}
+.column-name.active+.next-wrap{display:block;}

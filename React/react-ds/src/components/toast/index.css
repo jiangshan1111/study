@@ -1,0 +1,30 @@
+.toast-div{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  padding: 5px 20px;
+  height: auto;
+  font-size: 16px;
+  color: red;
+  line-height: 20px;
+  background: rgb(125, 205, 207);
+  transform: translate(-50%,-50%);
+  animation: showToast 1s forwards;
+}
+@keyframes showToast{
+  0%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+@keyframes hideToast{
+  0%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}

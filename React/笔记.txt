@@ -1,0 +1,919 @@
+一、步骤
+    1.create一个项目
+    2.npm run eject 将webpack配置暴露出来
+    3.npm start 运行 如果报错删除node_modules 重新下载（npm install）
+    4.npm build 打包一个文件 npm install serve 注册一个服务 serve -s build
+    5.更改webpack.config.js配置
+    166行 
+        : isEnvDevelopment && 'cheap-module-source-map',
+    改成
+        : isEnvDevelopment && 'eval-source-map',//可以将react源文件暴露出来，在浏览器中打断点
+
+
+二、jsx     
+    1.自己编写jsx；
+    <script src='js/babel.min.js'></script>
+    /*jsx createElement*/ //babel的自执行命令
+    function createElement(nodeName,attr,...args){
+        console.log(nodeName:nodeName,attr:attr,children:[].concat(...args))
+    }
+
+
+三、react
+    1.绑定事件时 用 this.clickRow.bind(this)
+    clickRow(){
+        console.log(1)
+    }
+    也可以用 this.clickRow1
+    clickRow1=()=>{
+        console.log(1)
+    }
+    或者 onClick = {()=>{this.clickRow()}}
+
+    检测props里的数据类型
+    import PropTypes from 'prop_types';
+    使用
+    static propTypes = {
+        data:PropTypes.array.isRequired
+    }
+    //默认值
+    static defaultProps = {
+        data:[]
+    }
+
+
+    react 图片
+    直接使用 './assets/img/xx.img' webpack识别不了 应该用 require('./assets/img/xx.img')
+    transform:translateX(-50%) 左移width的50% 用于自适应宽度 left:50% 居中的情况
+
+    react想使用class而不是className
+    需要下载react-html-attrs插件
+    npm install babel-plugin-react-html-attrs --save-dev
+    在webpack.config.js里
+    {
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
+        ...
+    }
+    里的plugin下加
+    plugin:[
+        [
+        ...
+        ],
+        'react-html-attrs'
+    ]
+
+    1.react 生命周期
+    componentWillMount 组件挂载前
+    属性能找到（例如this.props，states） dom找不到
+    componentDidMount  组件挂载后
+    componentWillUpdate  组件更新前
+    componentDidUpdate  组件更新后
+    componentWillUnMount  组件卸载前
+
+
+    2.react 常用方法
+    阻止事件冒泡  e.nativeEvent.stopImmediatePropagation()
+
+
+    3.react 表单
+    input(text) 加上 value='' 受控 无法更改
+    input(text) 加上 defaultValue='123' 不受控 可以更改
+    input(checkbox) 加上 checked 受控 无法更改
+    input(checkbox) 加上 defaultChecked 不受控 可以更改
+    给input 加上ref = 'xxx'  可以通过 this.refs.xxx.value 来获取input输入值
+
+    4.react 函数
+    函数允许调用组件 组件也允许调用函数
+    1.function clock(){
+        let c = <div>{new Date()}</div>
+        ReactDom.render(c,app)
+    }
+    setInterval(clock,1000)
+    2.function c(){
+        return 'hello'
+    }
+    ReactDom.render(<div>{c()}</div>,app)
+
+
+    5.组件重复调用（父子组件）(父子组件之间通信 可以通过生命周期来 判断父组件值改变是否改变子组件的值)
+    class Child extends React.Component {
+        constructor(props) {
+        super(props);
+        this.state = {
+            a: ''
+        }
+        }
+        componentWillMount () {
+        this.setState({
+            a: this.props.a
+        })
+        }
+        render () {
+        return <div>{this.state.a}</div>
+        }
+    }
+    class Parent extends React.Component {
+        render () {
+        return <div>
+            <Child a='111' />
+            <Child a='1112' />
+            <p>222</p>
+        </div>
+        }
+    }
+    ReactDOM.render(
+        <Parent />,
+        document.getElementById('root')
+    )
+
+    子组件拿父组件的值
+    <Child a={父组件的state} />
+    子组件里调用 this.props.a  默认情况会同步改变 不想改变的话通过生命周期和state来控制
+
+    父组件拿子组件的数据 通过函数
+    <Child a={父组件的函数b，同时bind(this)} />
+    子组合里执行this.props.a函数 传值
+    父组件函数b 取值 赋值给父组件
+
+    6.react Tab选项卡
+    在DOM上绑定类似Value属性 用data-  例如data-MyIndex
+    选项卡具体代码见 tab文件夹
+
+    7.百度JSONP
+    https://www.baidu.com/sugrec?prod=pc&'wd'=1&cb=jiangshan
+
+    8.webpack
+    a.入口，出口
+    b.loader(加载器)
+    c.plugins(插件)
+    touch webpack.config.js 新建一个js
+    执行webpack 
+    命令webpack运行  命令webpack -w(watch) 监听webpack 实时打包
+    命令webpack -p压缩打包  命令webpack -pw(watch) 监听webpack 压缩打包实时打包
+    导出值
+    export {a,b}
+    导出对象
+    export default{
+    a:1,
+    b:2
+    }
+    导入值
+    import {a,b as kkkk} from './a'
+    导入对象
+    import json from './a'
+
+
+    9.react 脚手架
+    npm install -g create-react-app 安装react脚手架
+    create-react-app --version react版本
+
+    10.react 动画
+    react-transition-group
+    npm i react-transition-group@1.2.1 下载
+    import {CSSTransitionGroup} from 'react-transition-group'  引入
+
+    dangerouslySetInnerHTML = {{__html:'abcs'}}  //类似于原生js的innerHtml
+
+    塞css
+    css(){
+        return `color:red`
+    }
+    <div dangerouslySetInnerHTML = {{__html:this.css()}}></div>
+
+
+    css(){
+    .jiangshan-enter{
+        opactity:0
+    }
+    .jiangshan-enter-active{
+        opactity:1;
+        transition:.7s
+        }
+        .jiangshan-leave{
+        opactity:1;
+        }
+        .jiangshan-leave-active{
+        opactity:0;
+        transition:.7s
+        }
+        .jiangshan-appear{
+        opactity:0;
+        background:red
+        }
+        .jiangshan-appear-active{
+        opactity:1;
+        background:yellow
+        }
+    }
+    let ODiv = [this.state.v?<div></div>:'']
+    <CSSTransitionGroup 
+        transitionName = 'jiangshan'
+        transitionEnterTimeOut={70}
+        transitionLeaveTimeOut={70}
+        transitionAppear={70}> //用标签包起来
+    {ODiv}
+    <CSSTransitionGroup/>
+    /*
+    transitionName = 'jiangshan' 自定义类名
+    transitionEnterTimeOut 可以限定 动画入场时间 如果超过了你给的参数 
+    那么将直接变成 jiangshan-enter-active{}
+    transitionLeaveTimeOut 可以限定 动画离场时间 如果超过了你给的参数 
+    那么将直接变成 jiangshan-leave-active{}
+    .jiangshan-enter{} 进入之前的样式
+    .jiangshan-enter-active{} 进入之后的样式
+    .jiangshan-leave{} 离开时的样式
+    .jiangshan-leave-active{} 离开之后的样式
+    .jiangshan-appear{} 初始动画
+    .jiangshan-appear-active{} 初始动画之后的样式
+    */
+
+
+    react-motion 插件
+    <motion style={{myLeo:spring(this.state.v?100:0)}}>
+        {({myLeo})=>{
+        <div>
+            {this.state.start}
+            <ul style={{height:myLeo}}>
+            {aLi}
+            </ul>
+        </div>
+        }}
+    </motion>
+
+
+
+四、插槽（Portals）
+    this.props.children 可以获取组件的内容 比如<Button>aaaasas</Button>
+    设置默认props Button.defaultProps = {type:'button'}
+
+
+五、react.lazy()和 react.Suspense()
+    按需加载
+    import React, { Component, lazy, Suspense } from 'react';
+    之前引入是 import Clock from './components/clock'
+    现在引入lazy代码是 const Clock = lazy(()=>import('./components/clock'))
+    使用
+    <Suspense fallback={<div><div>}> //fallback里是loading图标对应的div 也可以用<React.Fragment></React.Fragment>来占位
+        <Clock/>
+    </Suspense>
+
+
+六、css模块化
+    css单独组件使用，避免全局污染
+    在vue中使用scoped
+    <style scoped></style>
+    在react中需要配置webpack 脚手架里已经自动配置好 在webpack.config.js里 cssModuleRegex下设置module为true
+
+    css模块化
+    1.命名需要加上.module不然匹配不上
+        引入 import Css from './style.module.css'
+        使用 <app className={Css['app']}/>
+            拼接 例如.app.active  <app className={Css['app']+' '+Css['active']}/>
+        自动生成css模块化后的名称
+        配置webpack.config.js {
+            test: cssModuleRegex,
+            use:getStyleLoaders({
+            //getLocalIdent:getCSSModuleLocalIdent,//删除这条属性
+            localIdentName:'[path]-[name]-[local]-[hash:base64:6]',//增加这条属性
+            或者
+            localIdentName:'[local]__[hash:base64:6]',//可自定义
+            })
+        }
+    2.文件夹式的模块化（不用加module）
+        配置webpack.config.js 
+        {
+        test: cssRegex,
+        exclude: cssModuleRegex,
+        use: getStyleLoaders({
+            importLoaders: 1,
+            module:true, //开启模块化
+            localIdentName:'[local]__[hash:base64:6]',//可自定义
+            sourceMap: isEnvProduction
+            ? shouldUseSourceMap
+            : isEnvDevelopment,
+        }),
+        exclude:[ //排除这两个文件夹下的css文件
+            path.join(__dirname,'--','node_modules'),
+            path.join(__dirname,'--','src/assets/css/common'),
+        ]
+        // Don't consider CSS imports dead code even if the
+        // containing package claims to have no side effects.
+        // Remove this when webpack adds a warning or an error for this.
+        // See https://github.com/webpack/webpack/issues/6571
+        sideEffects: true,
+        },
+        引入 import Css from './style.css' //不用加module
+        使用 <app className={Css['app']}/>
+            拼接 例如.app.active  <app className={Css['app']+' '+Css['active']}/>
+
+        当只有几个文件夹需要使用模块化的话，需要单独插入
+        {
+        test: cssRegex,
+        use: ['style-loader','css-loader'],
+        include:[ //只有这两个文件夹使用模块化
+            path.join(__dirname,'--','node_modules'),
+            path.join(__dirname,'--','src/assets/css/common'),
+        ]
+        }
+
+        css-loader 3.2版本后
+        需要将
+            module:true, //开启模块化
+            localIdentName:'[local]__[hash:base64:6]',//可自定义
+        改成
+            module:{
+            localIdentName:'[local]__[hash:base64:6]',//可自定义
+            }
+
+
+七、hooks
+    无状态组件和有状态组件,高阶组件
+    无状态组件（展示组件，函数式组件）：就是一个函数没有props，没有生命周期，就是一个简单的视图函数，没有业务逻辑更纯粹的展示ui。
+        代码示例：
+        function NullStatus(){
+        return(
+            <div>无状态组件</div>
+        )
+        }
+        使用
+        function NullStatus(props){
+        return(
+            <div>{props.title}</div>
+        )
+        }
+        <NullStatus title="hehe"></NullStatus>
+
+
+    有状态组件（容器类组件，类组件）：标准使用模式此函数继承了react里面的组件和props，可以使用生命周期在里面写业务逻辑，可以在里面做任何事情。
+        代码示例：
+        正常的react组件都是
+
+    高阶组件 (一般只用于写业务逻辑，不同ui层可以反复调用)
+    其实就是高阶函数，我们定义一个函数，里面返回一个有状态组件，就是高阶组件
+        先了解高阶函数
+        function hoc(){
+        return function hocComponent(args){
+            console.log(args)
+        }
+        }
+        hoc()('呵呵')
+        这个时候返回呵呵
+
+        高阶组件分为两种方式：
+        1.属性代理的方式：
+        它通过做一些操作，将被包裹组件的props和新生成的props一起传递给此组件，这称之为属性带了。
+        2.反向继承的方式
+        这种方式返回的react组件继承了被传入的组件，所以它能够访问到的区域，权限更多，相比属性代理方式，它更像打入组织内部，对其进行修改。
+
+        获取函数参数
+        function aab(){
+        console.log(arguments) //获取到的是伪数组，不能foreach没有原型链
+        console.log(Array.prototype.slice.call(arguments)) //es5转为真数组
+        console.log(Array.from(arguments)) //es6转为真数组
+        }
+        aab(1,2,3,4,5,6)
+
+        箭头函数获取参数
+        let aab=(...args)=>{
+        console.log(args) //[1,2,3,4,5,6]
+        }
+        aab(1,2,3,4,5,6)
+
+
+
+
+    16.8版本后的新特性
+    hooks可以让无状态组件具备有状态组件的部分功能，比如设置state,使用钩子函数：
+    componentDidMount,componentDidUpdate,componentWillUnMount
+    引入 import React,{useState,useEffect} from 'react';
+    使用
+    function App () {
+        const [title, setTitle] = useState('默认值') //类似于之前的constructor 设置和使用state
+        function changeTitle () {
+        setTitle('改变了')
+        }
+        useEffect(() => {
+        console.log(title)
+        return () => {
+            //页面跳转时触发
+        }
+        }, [title])//加第二个参数表示只有这个值改变时才会触发
+        return (
+        <div className="App" >
+            {title}
+            <button onClick={changeTitle.bind(this)}>改变title</button>
+        </div>
+        );
+    }
+    // setTitle('首页')是一个异步执行函数 在方法中使用 获取title 最好先定义变量然后执行
+    useEffect //刷新函数 获取改变后的state
+    useState //设置state默认值
+    useReducer //类似于redux里的reducer
+    useContent //组件共享reducer生产的值
+    useRef  //使用setInterval  let timer = useRef(null)  timer.current=setInterval({},2000)
+
+
+
+八、react-transition-group
+    引入 import CssTransition from 'react-transition-group';
+    使用 <CssTransition classNames='fade' in={this.state.show} timeout={2000} onEntered={(el)=>{}} onExited={(el)=>{}}>
+    
+        </CssTransition>
+        in 初始化 
+        classNames css的样式名
+        onExited 出场动画回调函数
+        onEntered 入场动画回调函数
+    设置css 
+        fade-enter{
+            left:300px;
+            display:block
+        }
+        fade-enter-active{}
+        fade-enter-done{}
+        fade-exit{}
+        fade-exit-active{}
+        fade-exit-done{}
+
+
+九、react-router
+    react-router-dom:基于react-router，加入了在浏览器运行环境下的一些功能；
+                比如：link组件，会渲染一个a标签，路由模式分为：BrowerRouter(history)(不带#号)和
+                HashRouter(带#号)，前者使用pushState和popstate事件构建路由，后者使用window.location.hash和
+                hashchange事件构建路由。
+
+        react如果用自带的 this.props.match.params.id f5刷新时会导致页面报错 这个时候需要用到自定义方法localParam
+        详细操作 路由缓存可见router.js 以及pages文件夹
+
+        子路由：
+            只需要在对应的主页面里再写一套路由即可 例如 /goods 对应的component里写上 /goods/details 对应的路由即可
+            此外 /goods不能使用exact 需要用到模糊匹配
+            返回到首页用 this.props.history.replace(-1)
+            <Redirect to="./goods/details"></Redirect> 设置重定向可以让路由为/goods时显示/goods/details
+        withRouter:
+            import {withRouter} from 'react-router-dom'
+            export default withRouter(子组件class)
+            可以让组件使用router里的props 用于跳转
+
+        路由认证： 需要自定义一个AuthRoute方法 然后需要认证的路由地方 用<AuthRoute></AuthRoute>代替<Route></Route>
+            import React from 'react';
+            import {Redirect,Route} from 'react-router-dom';
+            import config from '../assets/js/conf/config.js';
+            const AuthRoute = ({ component: Component, ...rest }) => (
+                <Route
+                    {...rest}
+                    render={props =>
+                        Boolean(localStorage['isLogin']) ? (
+                            <Component {...props} />
+                        ) : (
+                            <Redirect
+                                to={{
+                                    pathname: config.path+"login/index",
+                                    state: { from: props.location }
+                                }}
+                            />
+                        )
+                    }
+                />
+            );
+            export {
+                AuthRoute
+            }
+
+            <AuthRoute path={config.path+"balance/index"} component={BalanceIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"address/index"} component={AddressIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"address/add"} component={AddressAdd} ></AuthRoute>
+            <AuthRoute path={config.path+"address/mod"} component={AddressMod} ></AuthRoute>
+            <AuthRoute path={config.path+"balance/end"} component={BalanceEnd} ></AuthRoute>
+            <AuthRoute path={config.path+"profile/index"} component={ProfileIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"myorder"} component={MyOrder} ></AuthRoute>
+            <AuthRoute path={config.path+"order/detail"} component={OrderDetail} ></AuthRoute>
+            <AuthRoute path={config.path+"order/add_review"} component={AddReview} ></AuthRoute>
+            <AuthRoute path={config.path+"user/address/index"} component={UserAddressIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"user/address/mod"} component={UserAddressMod} ></AuthRoute>
+            <AuthRoute path={config.path+"user/mobile/index"} component={UserMobileIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"user/modpwd/index"} component={UserModpwdIndex} ></AuthRoute>
+            <AuthRoute path={config.path+"user/myfav/index"} component={MyFav} ></AuthRoute>
+
+        写路由时最好加上一个公共前缀地址  修改webpack里的publicPath 或者在package.json里加homePage homePage里属性pathname
+            因为使用history的话 路径前需要加文件夹的名字 
+            使用hash的话 不需要加文件夹的名字 
+            <Route path={config.path+"home"} component={HomeComponent} ></Route>    
+            使用history f5刷新时会导致页面报错 
+            这个时候需要改服务器配置 apache 需要在 .htaccess下改变相对路径
+
+十、redux （抽象化） redux-thunk redux-saga
+    1.选购商品
+        this.props.disPatch({type:'inc',data:[]})
+    2.商品装车
+        function counterReducer(state={counter:0},action){
+            return Object.assign({},state,action.data) //需要使用拷贝来改变对象的地址 如果用Object.assign(state,action.data) 会导致 state为null时报错
+            或者
+            return Object.assign(...state,...action.data) //需要使用拷贝来改变对象的地址
+        }
+    3.商品入库
+        let store = createStore(counterReducer)
+    4.从库中获取商品 使用
+        用<ProVider store={store}>包裹
+            <RouteComponent></RouteComponent>
+        </ProVider>
+        这样所有的路由组件中都可以使用redux了
+        路由组件中
+        用
+        import {connect} form 'react-redux';
+        export default connect((state)=>{
+            return{
+                state:state
+            }
+        })(GoodsDetails)
+        将路由组件与redux关联起来
+
+
+    下载redux 和 react-redux
+
+    import {createStore,combineReducers} form redux;
+    import {Provider} form 'react-redux'; //方便读取store 可以直接使用this.props.disPatch和this.props.state
+                                                          否则就要使用store.disPatch和store.getState() 还会造成使用冲突等
+    combineReducers 可以将多个reducer合并为一个store用
+    let store = createStore(combineReducers({
+        counter:counterReducer,
+        user:userReducer
+    }))
+    使用时 用this.props.state.counter
+
+
+    redux-thunk
+        用来延迟action的派发（dispatch），这可以处理异步action的派发（dispatch）
+        使用
+        import thunk from 'redux-thunk'
+        import {createStore,combineReducers,applyMiddleware} form redux;
+        let store = createStore(combineReducers({
+            counter:counterReducer,
+            user:userReducer
+        }),applyMiddleware(thunk))
+
+        使用dispatch
+        this.props.disPatch((disPatch,getState)=>{
+            disPatch({type:'',data:{}})
+        })
+
+        主要是为了简化代码 初始的dispatch只能传对象 thunk支持传一个函数 函数支持异步操作
+    react-sage 类似于 react-thunk
+    import createSaga from 'redux-sage';
+    let saga = createSaga();
+    function *rootSage(){
+        console.log()
+    }
+    let store = createStore(combineReducers({
+        counter:counterReducer,
+        user:userReducer
+    }),applyMiddleware(saga))
+
+    举例：//function *demo(){
+        while(true){
+            yield "111";
+            yield "222";
+            yield "333";
+        }
+    }
+    let d=demo()
+    console.log(d.next().value)111
+    console.log(d.next())222
+    console.log(d.next())333
+    console.log(d.next())444
+
+
+    import {take,put,takeEvery,all,fork,takeLatest,select,call} from 'redux-saga/effects';
+    function *watchIncCount(){
+
+        //监听所有的state
+        let rootState = yield select()
+        console.log(rootState)
+        //监听action的dispatch传过来的type
+        let action = yield take("INC");
+        console.log(action)
+        //put将action里面的值传递给reducer
+        yield put({type:'inc',data:action.data});
+    }
+    function *watchDecCount(){
+
+        //并发监听
+        yield takeEvery('DEC',function *(action){
+            yield put({type:'dec',data:action.data})
+        })
+        
+        //非并发监听
+        yield takeLatest('DEC',function *(action){
+            yield put({type:'dec',data:action.data})
+        })
+    }
+    yield call(函数名)  执行函数 可以执行外部导入的axios请求时间
+    export default *(){
+        yield all({
+            fork(watchIncCount),
+            fork(watchDecCount)
+        })
+    }
+
+
+十一、Axios和fetch的使用
+            13717628483 123456
+            success function用箭头函数 就可以改变this指向 指向对应的react或者vue
+        url-search-params-polyfill axios可以兼容低版本ie
+        whatwg-fetch fetch可以兼容低版本ie
+
+        可以使用let params = new URLSearchParams()
+                params.append('12',12)
+        来做post方式的传参
+
+        axios可以直接.then(res=>{console.log(res.data)})
+
+        解决axios默认为application/json的3种方法
+        // axios({
+        //   method: 'post', url: '/api/lockServer/search',
+        //   headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded'
+        //   }, data: qs.stringify({ index: 1 })
+        // })
+        // axios({
+        //   method: 'post', url: '/api/lockServer/search',
+        //   headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded'
+        //   }, data: 'index=1&index1=2'
+        // })
+        let param = new URLSearchParams()
+        param.append('username', 'admin')
+        param.append('pwd', 'admin')
+        axios({ method: 'post', url: '/api/lockServer/search', data: param })
+
+        fetch需要.then(res=>{return res.json()}).then(res=>{console.log(res.data)})
+        fetch post需要设置
+        headers = {
+            'Content-Type':'application/x-www-form-urlencoded'
+        }
+
+        fetch({
+            methods:'get',
+            body:'aaa' //ajax，axios用body fetch用body
+        })
+
+
+        axios拦截器解决【前端并发】
+
+        1. interceptors
+        // 添加请求拦截器
+        axios.interceptors.request.use(function (config) {
+          // 在发送请求之前做些什么
+          return config;
+        }, function (error) {
+          // 对请求错误做些什么
+          return Promise.reject(error);
+        });
+
+        // 添加响应拦截器
+        axios.interceptors.response.use(function (response) {
+          // 对响应数据做点什么
+          return response;
+        }, function (error) {
+          // 对响应错误做点什么
+          return Promise.reject(error);
+        });
+
+
+        2. cancel token:
+        调用 cancel token API 可以取消请求。官网提供了两种方式来构建 cancel token，我们采用这种方式：
+        通过传递一个 executor 函数到 CancelToken 的构造函数来创建 cancel token，方便在上面的请求拦截器中检测到重复请求可以立即执行:
+
+        const CancelToken = axios.CancelToken;
+        let cancel;
+
+        axios.get('/user/12345', {
+          cancelToken: new CancelToken(function executor(c) {
+            // executor 函数接收一个 cancel 函数作为参数
+            cancel = c;
+          })
+        });
+
+        // cancel the request
+        cancel();
+        本文提供的思路就是利用 axios interceptors API 拦截请求，检测是否有多个相同的请求同时处于 pending 状态，如果有就调用 cancel token API 取消重复的请求。
+
+    跨域设置
+        1.在package.json里加proxy:"http://vue.shop.com"（放弃）
+        或者
+        2.下载 http-proxy-middleware
+        在src下建setupProxy.js
+
+        console proxy = require('http-proxy-middleware');
+        module.export=function(app){
+            app.use(proxy('/api',{
+                target:'http://vue.shop.com/api',
+                changeOrigin:true,//是否跨域，如果target是域名需要配置，如果是IP地址不需要
+                pathRewrite:{
+                    "^/api":""
+                } //不要pathRewrite的话 拼接出来的是http://vue.shop.com/api/api，所以需要重写
+            }))
+            app.use(proxy('/test',{
+                target:'http://localhost:3000',
+            }))
+        }
+        或者
+        3.在webpack proxy中设置
+        proxy:{
+            "/proxy": {
+                "target": "http://vueshop.glbuys.com",
+                "changeOrigin": "true",
+                "pathRewrite": {
+
+                }
+            }
+        },
+
+
+
+
+
+十二、ant-design（pc端 移动端 antd-mobile）
+        按需加载
+        在package.json里babel下加
+        "plugins": [
+        [
+            "import",
+            {
+            "libraryName": "antd-mobile",
+            "style": "css"
+            }
+        ]
+        ]
+
+        同时引入antd和antd-mobile
+        "plugins": [
+        [
+            "import",
+            {
+            "libraryName": "antd",
+            "style": "css"
+            },
+            "antd"
+        ],
+        [
+            "import",
+            {
+            "libraryName": "antd-mobile",
+            "style": "css"
+            },
+            "antd-mobile"
+        ]
+        ]
+        表格  render类似于easyui里的formatter
+        form表单  
+
+    react 多语言国际化
+        react-intl-universal
+
+十三、react 项目架构注意事项
+    /*eslint-disable*/
+    import 'babel-polyfill'; //ie支持es6
+    import 'url-search-params-polyfill'; //支持ie使用url-search-params
+
+    用flexible来做移动端兼容
+
+    涉及到子路由时 改变子路由让主路由里的state改变
+    需要注意
+    componentDidMount(){
+    } //f5刷新时改变state
+    componentWillReceiveProps(newProps){
+    } //切换子路由时改变state
+    两者都要有 不然会有一种情况不满足
+
+
+十四、Immutable.js常用API  //解决js引用赋值类型问题 深拷贝 使用JSON.parse(JSON.stringify()) 不能转换undefined和function
+    1.Map  //只能转换第一层
+    var imMap = Immutable.Map({'name':'jiangshan'})  
+        imMap.get("name")  //jiangshan 
+        imMap.set("name1",'212') //赋值
+
+    2.fromJS  //会转换obj深层子对象 类似于深拷贝
+    var imFrom = Immutable.fromJS({'name':'jiangshan',children:{name:'12123'}})  
+        imMap.getIn(["children","name"])  //12123 数组用下标0，1，2
+        imMap.setIn("name1",'212') //赋值
+        var result = imMap.updateIn("name",function(x){
+            return x+20
+        })
+        console.log(result.getIn('name')) // jiangshan22  类似于setIn 可以做逻辑
+
+    3.List //操作数组
+    var imList = Immutable.List([1,2,3,4,5,{name:'jiangshan'}])  
+        imList.count() // 5 长度
+        imList.get(3) // 3 获取下标对应的元素
+        imList.getIn(6,'name') // jiangshan 获取下标对应的对象里的元素
+
+    4.is //对两个obj比较
+        var obj1 = {'name':'jiangshan'}
+        var obj2 = {'name':'jiangshan'}  
+        imMap.is(obj2,obj1) //比较 true
+
+    5.toJS //再把转换成的map等转换回原来的obj
+        console.log(Immutable.Map({'name':'jiangshan'}).toJS())   // {'name':'jiangshan'}
+
+
+  redux使用Immutable
+    npm install --save immutable redux-immutable
+
+    import {createStore} from 'redux-immutable'
+    let store = createStore(combineReducers({
+        counter:counterReducer,
+        user:userReducer
+    }))
+
+    获取值时用 this.props.state.counter.getIn('counter','count')
+
+    改变值时使用
+    import {Map} from 'immutable'
+    function counterReducer(state=Map({'count':0},action)){
+        return state.updateIn(["count"],(count)=>action.data.count)
+    }
+
+
+十五、Mobx //一个轻量级的状态管理工具
+    npm install --save-dev @babel/plugin-proposal-decorators 必须是--save-dev
+    npm install --save-dev mobx
+    npm install --save-dev mobx-react
+
+
+    decorators(修饰器)
+    npm install --save-dev @babel/core babel-loader @babel/preset-env
+
+    在package中配置
+    {
+        plugins:[
+            [
+                "@babel/plugin-proposal-decorators",
+                {
+                    "legacy":true
+                }
+            ]
+        ]
+    }
+
+    @test 
+    class MyClass{}
+    function test(target){
+        target.msg = '11111'
+    }
+    console.log(MyClass.msg) // 11111
+
+
+    //修饰方法
+    class Math{
+        @log add(a,b){
+            return a+b
+        }
+    }
+
+    function log(target,name,descriptor){
+        //target 对应的类
+        //name 对应修饰的方法名
+        //descriptor 返回一个对象 Object.defineProperty
+        descriptor.value = function(a,b){
+            console.log(a,b)
+        }
+    }
+
+ Mobx 在react中使用
+    主文件
+    //导入mobx
+    import {observable,configure} from "mobx";
+    import {Provider} from "mobx-react";
+
+    //开启严格模式：限制开发者只能通过 @action 来修改 state
+    //有利于阻止代码以及让数据流更清晰
+    configure(true)
+
+    let store = observable({
+        counter:{count:0}
+    })
+
+    <Provider {...store}>
+
+    </Provider>
+
+
+    使用的文件
+    //导入mobx
+    import {action} from "mobx";
+    import {observe,inject} from "mobx-react";
+
+    @inject("counter")
+    @observe //将组件转化成响应式组件 用mobx.autorun 包装了组件的render以确保任何组件渲染中使用的数据
+            //变化时都可以强制刷新组件
+
+    引用state this.props.counter.count
+    改变state
+    @action add(){
+        this.props.counter.count = ++this.props.counter.count
+    }
+
+
+移动端真机测试
+    手机和电脑处于同一个wifi下
+    草料二维码生成

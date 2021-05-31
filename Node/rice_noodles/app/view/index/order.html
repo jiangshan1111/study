@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <div class="navbar-center"><span class="navbar-title">我的订单</span></div>
+    </header>
+
+    <section class="g-scrollview" id="J_List">
+
+        <article class="m-list list-theme4" id="J_ListContent">
+
+        </article>
+
+    </section>
+    <footer class="m-tabbar">
+        <a href="/" class="tabbar-item">
+            <span class="tabbar-icon">
+                <i class="icon-compose"></i>
+            </span>
+            <span class="tabbar-txt">点餐</span>
+        </a>
+        <a href="javascript:;" class="tabbar-item tabbar-active" id="myorder">
+            <span class="tabbar-icon">
+                <i class="icon-feedback"></i>
+            </span>
+            <span class="tabbar-txt">订单</span>
+        </a>
+        <a href="javascript:;" class="tabbar-item" id="mycont">
+            <span class="tabbar-icon">
+                <i class="icon-ucenter-outline"></i>
+            </span>
+            <span class="tabbar-txt">我的</span>
+        </a>
+    </footer>
+</section>
+<script id="J_ListHtml" type="text/html">
+{{each list as data}}
+<a href="javascript:;" class="list-item" onclick="ordermore('{{data.orid}}','{{data.adid}}','{{data.foodid}}')">
+    <div class="list-img">
+        <img src="http://static.ydcss.com/uploads/ydui/goods_default.jpg" data-url="{{data.f_img}}">
+    </div>
+    <div class="list-mes">
+        <h3 class="list-title">{{data.f_name}}</h3>
+        <div class="list-mes-item">
+            <div>
+                <p>{{data.f_marks}}</p>
+                <p>
+                    <span class="list-price"><em>¥</em>{{data.f_price}}</span>
+                    <span>{{data.ortime}}</span>
+                </p>
+            </div>
+            <div>
+                {{data.orstate}}
+            </div>
+        </div>
+    </div>
+</a>
+{{/each}}
+</script>
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 引入数据加载脚本 -->
+<script src="/public/index/css/template.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    !function () {
+
+        // 根据实际情况自定义获取数据方法
+        var page = 1, pageSize = 10;
+        var loadMore = function (callback) {
+            $.ajax({
+                url: '/myorder',
+                dataType: 'jsonp',
+                data: {
+                    page: page,
+                    pagesize: pageSize
+                },
+                success: function (ret) {
+                    typeof callback == 'function' && callback(ret);
+                }
+            });
+        };
+
+        $('#J_List').infiniteScroll({
+            binder: '#J_List',
+            pageSize: pageSize,
+            initLoad: true,
+            loadingHtml: '<img src="http://static.ydcss.com/uploads/ydui/loading/loading10.svg"/>',
+            loadListFn: function () {
+                var def = $.Deferred();
+
+                loadMore(function (listArr) {
+
+                    var html = template('J_ListHtml', {list: listArr});
+                    $('#J_ListContent').append(html).find('img').lazyLoad({binder: '#J_List'});
+
+                    def.resolve(listArr);
+
+                    ++page;
+                });
+
+                return def.promise();
+            }
+        });
+    }();
+
+    function ordermore(orid,adid,foodid) {
+        location.href="/orderview?orid="+orid+"&adid="+adid+"&foodid="+foodid;
+    }
+
+</script>
+
+</body>
+</html>

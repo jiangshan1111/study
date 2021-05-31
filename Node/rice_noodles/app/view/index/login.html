@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">登录</span>
+        </div>
+    </header>
+
+    <section class="g-scrollview">
+
+        <div class="m-cell demo-small-pitch">
+            <div class="cell-item">
+                <div class="cell-left">手机号：</div>
+                <div class="cell-right">
+                    <input type="text" name="u_phone" class="cell-input" placeholder="请输入您的手机号" autocomplete="off" />
+                </div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">密&nbsp;&nbsp;&nbsp;&nbsp;码：</div>
+                <div class="cell-right">
+                    <input type="password" name="u_pass" class="cell-input" placeholder="请输入您的密码" autocomplete="off" />
+                </div>
+            </div>
+
+        </div>
+        <div class="butcenter">
+            <button type="button" class="btn-block btn-primary" id="btn_login">登录</button>
+        </div>
+        <div class="slogin">
+            还没有账号，<a href="/register">立刻注册</a>
+        </div>
+
+    </section>
+
+</section>
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    !function (win, $) {
+        //console.log($.cookie('userphone'));
+        if(!$.cookie('userphone')){
+            var dialog = win.YDUI.dialog;
+
+            $('#btn_login').on('click', function () {
+                var u_phone=$("input[name='u_phone']").val();
+                var u_pass=$("input[name='u_pass']").val();
+                //console.log($.cookie('userphone'));
+                $.post("/login",{u_phone:u_phone,u_pass:u_pass},function(result){
+                    if(result==200){
+                        dialog.toast('登录成功', 'none', 1000);
+                        location.href="/"
+                    }else {
+                        dialog.toast(result, 'none', 2000);
+                    }
+                });
+            });
+        }else {
+            location.href="/"
+        }
+
+    }(window, jQuery);
+</script>
+</body>
+</html>

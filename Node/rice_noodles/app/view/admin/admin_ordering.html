@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>未接订单管理</title>
+    <link rel="stylesheet" href="/public/admin/css/layui.css"  media="all">
+    <script src="/public/index/css/jquery.min.js"></script>
+    <script src="/public/admin/adminlink.js"></script>
+    <style>
+        .layui-table-cell{
+            height: auto;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">海贼王米线</div>
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item"><a href="/adminout">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">数据管理</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a class="" href="javascript:;">米线管理</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">订单管理</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">未接单</a></dd>
+                        <dd><a href="javascript:;">已接单</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="">配送员管理</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+
+            <table class="layui-hide" id="test"></table>
+
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        海贼王米线，欢迎您品尝。
+    </div>
+</div>
+<script src="/public/admin/layui.all.js" charset="utf-8"></script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+
+    });
+</script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:'/ad_ordering'
+            ,cols: [[
+                {field:'_id', width:200, title: '编号'}
+                ,{field:'foodcont', width:120, title: '图片', templet:'#f_img'}
+                ,{field:'foodname', width:150, title: '名称', templet:'<div>{{d.foodcont[0]["f_name"]}}</div>'}
+                ,{field:'username', width:100,title: '用户姓名', templet:'<div>{{d.address[0]["ad_name"]}}</div>'}
+                ,{field:'userphone', width:150,title: '手机号', templet:'<div>{{d.address[0]["ad_phone"]}}</div>'}
+                ,{field:'address', title: '地址', templet:'<div>{{d.address[0]["ad_address"]}}</div>'}
+                ,{field:'or_time', width:200,title: '下单时间'}
+                ,{field:'admindo', width:100, title: '操作', templet:'#admindo'}
+            ]]
+            ,page: true
+        });
+    });
+</script>
+<script type="text/html" id="f_img">
+    <img src="{{d.foodcont[0]['f_img']}}" width="120" class="foodimg"/>
+</script>
+<script type="text/html" id="admindo">
+    <button class="layui-btn layui-btn-sm" onclick="getorder('{{d._id}}')">接单</button>
+</script>
+<script>
+    function getorder(id) {
+        layer.open({
+            type: 2,
+            title: '选择配送员',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['200px', '240px'],
+            content: '/getorder?id='+id
+        });
+    }
+</script>
+</body>
+</html>

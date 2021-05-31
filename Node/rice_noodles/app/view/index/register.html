@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">注册</span>
+        </div>
+    </header>
+
+    <section class="g-scrollview">
+
+        <div class="m-cell demo-small-pitch">
+            <div class="cell-item">
+                <div class="cell-left">手机号：</div>
+                <div class="cell-right">
+                    <input type="text" name="u_phone" class="cell-input" placeholder="请输入您的手机号" autocomplete="off" />
+                </div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">昵&nbsp;&nbsp;&nbsp;&nbsp;称：</div>
+                <div class="cell-right">
+                    <input type="text" name="u_name" class="cell-input" placeholder="请输入您的昵称" autocomplete="off" />
+                </div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">密&nbsp;&nbsp;&nbsp;&nbsp;码：</div>
+                <div class="cell-right">
+                    <input type="password" name="u_pass" class="cell-input" placeholder="请输入您的密码" autocomplete="off" />
+                </div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">验证码：</div>
+                <div class="cell-right">
+                    <input type="text" name="vcode" class="cell-input" placeholder="请输入手机验证码" autocomplete="off" />
+                </div>
+                <a href="javascript:;" class="btn btn-warning" id="J_GetCode">获取短信验证码</a>
+            </div>
+
+        </div>
+        <div class="butcenter">
+        <button type="button" class="btn-block btn-primary" id="btn_reg">立刻注册</button>
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    function vcodes() {
+        //x上限，y下限
+        var x = 1000;
+        var y = 9999;
+        var rand = parseInt(Math.random() * (x - y + 1) + y)
+        console.log(rand);
+        var date = new Date();
+        date.setTime(date.getTime()+60*1000);
+        $.cookie('pvcode', rand, {expires: date});
+    }
+
+    !function (win, $) {
+        if(!$.cookie('userphone')){
+            var dialog = win.YDUI.dialog;
+
+            $('#btn_reg').on('click', function () {
+                var u_phone=$("input[name='u_phone']").val();
+                var u_name=$("input[name='u_name']").val();
+                var u_pass=$("input[name='u_pass']").val();
+                var vcode=$("input[name='vcode']").val();
+
+                if(u_phone==''){
+                    dialog.toast("手机号不能为空", 'none', 2000);
+                }else if(u_name==''){
+                    dialog.toast("昵称不能为空", 'none', 2000);
+                }else if(u_pass==''){
+                    dialog.toast("密码不能为空", 'none', 2000);
+                }else if(vcode==''){
+                    dialog.toast("验证码不能为空", 'none', 2000);
+                }else {
+                        //dialog.toast("注册成功", 'none', 1000);
+                        $.post("/register",{u_phone:u_phone,u_name:u_name,u_pass:u_pass},function(result){
+                            if(result==200){
+                                dialog.toast('注册成功', 'none', 1000);
+                                location.href="/login"
+                            }else {
+                                dialog.toast(result, 'none', 2000);
+                            }
+                        })
+                }
+
+            });
+
+        }else {
+            location.href="/"
+        }
+
+    }(window, jQuery);
+    var $getCode = $('#J_GetCode');
+
+    /* 定义参数 */
+    $getCode.sendCode({
+        disClass: 'btn-disabled',
+        secs: 60,
+        run: false,
+        runStr: '{%s}秒后重新获取',
+        resetStr: '重新获取验证码'
+    });
+
+    $getCode.on('click', function () {
+        /* ajax 成功发送验证码后调用【start】 */
+        YDUI.dialog.loading.open('发送中');
+        vcodes();
+        setTimeout(function(){
+
+            YDUI.dialog.loading.close();
+
+            $getCode.sendCode('start');
+            YDUI.dialog.toast('已发送', 'success', 1500);
+
+        }, 1500);
+    });
+</script>
+</body>
+</html>

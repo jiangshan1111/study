@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>点餐详情</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">点餐详情</span>
+        </div>
+    </header>
+
+    <section class="g-scrollview">
+
+        <article class="m-list list-theme4">
+
+            <a href="javascript:;" class="list-item">
+                <div class="list-img">
+                    <img src="" id="f_img">
+                </div>
+                <div class="list-mes">
+                    <h3 class="list-title" id="f_name"></h3>
+                    <div class="list-mes-item">
+                        <div>
+                            <p id="f_marks"></p>
+                            <p>
+                                <span class="list-price"><em>¥</em><span id="f_price"></span></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </article>
+        <div class="m-celltitle" style="margin-top: 0.2rem;">请选择配送地址</div>
+        <div class="m-cell" id="addresscont">
+
+        </div>
+        <div class="butcenter">
+            <button type="button" class="btn-block btn-primary" id="btn_getfood">确定点餐</button>
+        </div>
+
+    </section>
+</section>
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 引入数据加载脚本 -->
+<script src="/public/index/css/template.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    //获取url参数
+    $(document).ready(function(){
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        };
+        var foodid = getUrlParam('foodid');
+        var userphone = $.cookie('userphone');
+
+        //获取餐品详情
+        $.post("/getfood",{foodid:foodid},function(result){
+            //console.log(result[0].f_img);
+            $("#f_img").attr("src",result[0].f_img);
+            $("#f_name").text(result[0].f_name);
+            $("#f_marks").text(result[0].f_marks);
+            $("#f_price").text(result[0].f_price);
+        });
+
+        //获取用户收货地址
+        $.post("/getaddress",{userphone:userphone},function(result){
+            var addresslist = [];
+            $.each(result, function(key, val) {
+                addresslist.push('<label class="cell-item"><span class="cell-left">'+val.ad_address+'<br/>'+val.ad_name+'('+val.ad_phone+')</span> <label class="cell-right"> <input type="radio" value="'+val._id+'" name="addressid"/> <i class="cell-radio-icon"></i> </label></label>');
+            });
+            $('<div/>', {
+                html: addresslist.join('')
+            }).appendTo('#addresscont');
+        });
+
+        //提交订单
+        !function (win, $) {
+            var dialog = win.YDUI.dialog;
+
+            $('#btn_getfood').on('click', function () {
+
+                var addressid = $("input[name='addressid']:checked").val();
+                if(!addressid){
+                    dialog.toast('请选择收货地址', 'none', 2000);
+                }else {
+                    dialog.confirm('点餐信息', '您确定要点餐么？', function () {
+
+                        $.post("/worder", {foodid: foodid, userphone: userphone, addressid: addressid}, function (result) {
+                            if (result == 200) {
+                                dialog.toast('点餐成功', 'none', 1000);
+                                location.href = "/order"
+                            } else {
+                                dialog.toast('点餐失败，请重新点餐', 'none', 2000);
+                            }
+                        });
+
+                    });
+                }
+
+            });
+
+        }(window, jQuery);
+
+    });
+
+
+</script>
+
+</body>
+</html>

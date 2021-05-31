@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>收货地址</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center"><span class="navbar-title">收货地址</span></div>
+        <a href="javascript:;" class="navbar-item" id="add">
+           新增
+        </a>
+    </header>
+
+    <section class="g-scrollview" id="J_List">
+
+        <article class="m-list list-theme4" id="J_ListContent">
+
+        </article>
+
+    </section>
+
+</section>
+<script id="J_ListHtml" type="text/html">
+    {{each list as data}}
+    <a href="javascript:;" class="list-item">
+        <div class="list-mes">
+            <h3 class="list-title">{{data.ad_name}}</h3>
+            <div class="list-mes-item">
+                <div>
+                    <p>{{data.ad_address}}</p>
+                    <p>
+                        <span class="list-price">{{data.ad_phone}}</span>
+                    </p>
+                </div>
+                <div>
+                    <span>编辑</span><span style="padding-left: 0.2rem;" onclick="deladdress('{{data._id}}')">删除</span>
+                </div>
+            </div>
+        </div>
+    </a>
+    {{/each}}
+</script>
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 引入数据加载脚本 -->
+<script src="/public/index/css/template.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    $("#add").click(function () {
+        location.href="/add_address";
+    });
+    !function () {
+
+        // 根据实际情况自定义获取数据方法
+        var page = 1, pageSize = 10, userphone=$.cookie('userphone');
+        var loadMore = function (callback) {
+            $.ajax({
+                url: '/myadress',
+                dataType: 'jsonp',
+                data: {
+                    page: page,
+                    pagesize: pageSize,
+                    userphone:userphone
+                },
+                success: function (ret) {
+                    typeof callback == 'function' && callback(ret);
+                }
+            });
+        };
+
+        $('#J_List').infiniteScroll({
+            binder: '#J_List',
+            pageSize: pageSize,
+            initLoad: true,
+            loadingHtml: '<img src="http://static.ydcss.com/uploads/ydui/loading/loading10.svg"/>',
+            loadListFn: function () {
+                var def = $.Deferred();
+
+                loadMore(function (listArr) {
+
+                    var html = template('J_ListHtml', {list: listArr});
+                    $('#J_ListContent').append(html).find('img').lazyLoad({binder: '#J_List'});
+
+                    def.resolve(listArr);
+
+                    ++page;
+                });
+
+                return def.promise();
+            }
+        });
+    }();
+
+    //删除收货地址
+    function deladdress(id) {
+        !function (win, $) {
+            var dialog = win.YDUI.dialog;
+
+            dialog.confirm('地址信息', '您确定要删除此地址么？', function () {
+
+                $.post("/deladdress", {adid:id}, function (result) {
+                    if (result == 200) {
+                        dialog.notify('地址删除成功', 2000, function(){
+                            location.reload();
+                        });
+                    } else {
+                        dialog.toast('删除失败，请重新操作', 'none', 2000);
+                    }
+                });
+
+            });
+        }(window, jQuery);
+    }
+</script>
+
+</body>
+</html>

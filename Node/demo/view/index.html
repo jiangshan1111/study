@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>点赞</title>
+</head>
+<body>
+  <p>点赞<span class="times">0</span>次</p>
+  <button id="dianzan">点赞</button>
+  <script src="../public/js/jquery.min.js"></script>
+  <script>
+    console.log($)
+    getNum()
+    function getNum(){
+      $.ajax({
+        type:'get',
+        url:'./getNum',
+        success(data){
+          if(data.code == 200){
+            $('.times').eq(0).html(data.num)
+          }
+        }
+      })
+    }
+    function dianzan(num){
+      $.ajax({
+        type:'post',
+        url:'./insertNum',
+        data:{
+          index:num
+        },
+        success(data){
+          if(data.code == 200){
+            $('.times').eq(0).html(data.num)
+          }
+        }
+      })
+    }
+    $('#dianzan').click(function(){
+      dianzan($('.times').eq(0).html())
+    })
+  </script>
+</body>
+</html>

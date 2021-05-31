@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <div ref="hello" v-hello-url="color">
+      <!-- <h1>{{obj1 | json}}</h1>
+      <h1>{{str | uppercase}}</h1> -->
+      <input type="text" name="" id="" v-model='fil'>
+      <p v-for="(item,index) in arr1" :key="index">{{item.index1}}</p>
+    </div>
+    <button @click="get">点击</button>
+  </div>
+  <script crossorigin="anonymous" integrity="sha384-BsohJuR1UmcDmCzWHDmbOFe5kYww52n7tWI9w3acK35v44HVjaAj73G0GD2Q/WnW" src="https://lib.baomitu.com/vue/2.0.0/vue.js"></script>
+  <!-- <script  src="https://lib.baomitu.com/vue/1.0.0/vue.js"></script> -->
+  <script>
+    console.log(Vue)
+    new Vue({
+      el:'#app',
+      data:{
+        arr1:[{index1:1},{index1:2},{index1:11},{index1:22}],
+        str:'abcd',
+        fil:'',
+        color:'red',
+        obj1:{
+          c:1
+        }
+      },
+      methods: {
+        get() {
+          this.arr1 = [{index1:2}]
+          this.str = 3
+          this.obj1.c = 3
+        }
+      },
+      directives: {
+        // 指令名称
+        helloUrl: {
+            inserted(el,binding) {
+                console.log(arguments)
+                // 指令中第一个参数是当前使用指令的DOM
+                console.log(el);
+                console.log(binding);
+                // 对DOM进行操作
+                // el.style.width = '200px';
+                // el.style.height = '200px';
+                // el.style.background = '#000';
+            }
+        }
+      },
+      watch:{
+        str(val,oldVal){
+          console.log(val,oldVal)
+        },
+        arr1:{
+          handler(val,oldVal){
+            console.log(val,oldVal)
+          },
+        },
+        obj1:{
+          handler(val,oldVal){
+            console.log(val,oldVal)
+          },
+          deep:true
+        }
+      },
+      filters: {
+        capitalize: function (value) {
+          if (!value) return ''
+          value = value.toString()
+          return value.charAt(0).toUpperCase() + value.slice(1)
+        }
+      },
+      mounted() {
+        console.log(333);
+        console.log(this.$refs['hello']);
+        this.$nextTick(() => {
+          console.log(444);
+          console.log(this.$refs['hello']);
+        });
+      },
+      created() {
+        console.log(111);
+        console.log(this.$refs['hello']);
+        this.$nextTick(() => {
+          console.log(222);
+          console.log(this.$refs['hello']);
+        });
+      }
+    })
+  </script>
+</body>
+</html>

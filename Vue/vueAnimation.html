@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .divBox{
+      width: 100px;
+      height: 100px;
+      background: yellowgreen;
+    }
+    .jiang-enter-active, .jiang-leave-active {
+      transition:2s;
+    }
+    .jiang-enter{
+      transform: translateY(90px);
+    }
+    /* .jiang-enter-to,.jiang-leave{
+      background: red;
+    } */
+    .jiang-leave-to{
+      transform: translateY(90px);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button @click="changed">animation</button>
+    <transition name = "jiang">
+
+      <div class="divBox" v-show="show"></div>
+    </transition>
+  </div>
+  <script src="https://lib.baomitu.com/vue/2.2.0/vue.js"></script>
+  <!-- <script  src="https://lib.baomitu.com/vue/1.0.0/vue.js"></script> -->
+  <script>
+    console.log(Vue)
+    new Vue({
+      el:'#app',
+      data:{
+        show:true
+      },
+      methods: {
+        changed:function(){
+          console.log(this)
+          this.show = !this.show
+        },
+        // transitions:{
+        //   'jiang':{
+        //     enterClass:'aaa',
+        //     leaveClass:'bbb',
+        //     transitionClass:'ccc',
+        //   }
+        // }
+      },
+    })
+  </script>
+</body>
+</html>

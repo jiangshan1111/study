@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>订单详情</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <a href="javascript:history.go(-1)" class="navbar-item">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">订单详情</span>
+        </div>
+    </header>
+
+    <section class="g-scrollview">
+
+        <article class="m-list list-theme4">
+
+            <a href="javascript:;" class="list-item">
+                <div class="list-img">
+                    <img src="" id="f_img">
+                </div>
+                <div class="list-mes">
+                    <h3 class="list-title" id="f_name"></h3>
+                    <div class="list-mes-item">
+                        <div>
+                            <p id="f_marks"></p>
+                            <p>
+                                <span class="list-price"><em>¥</em><span id="f_price"></span></span>
+                            </p>
+                        </div>
+                        <div id="or_state">
+                        </div>
+                    </div>
+                    <div id="order_time">
+                    </div>
+                </div>
+            </a>
+
+        </article>
+        <div class="m-celltitle" style="margin-top: 0.2rem;">配送地址</div>
+        <div class="m-cell" id="addresscont">
+        </div>
+        <div class="butcenter" id="delroder" style="display: none;">
+            <button type="button" class="btn-block btn-primary" id="btn_delfood">取消订单</button>
+        </div>
+
+    </section>
+</section>
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 引入数据加载脚本 -->
+<script src="/public/index/css/template.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    //获取url参数
+    $(document).ready(function(){
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        };
+        var foodid = getUrlParam('foodid');
+        //var userphone = $.cookie('userphone');
+        var adid=getUrlParam('adid');
+        var orid=getUrlParam('orid');
+
+        //获取餐品详情
+        $.post("/getfood",{foodid:foodid},function(result){
+            //console.log(result[0].f_img);
+            $("#f_img").attr("src",result[0].f_img);
+            $("#f_name").text(result[0].f_name);
+            $("#f_marks").text(result[0].f_marks);
+            $("#f_price").text(result[0].f_price);
+        });
+
+        //获取用户收货地址
+        $.post("/order_address",{adid:adid},function(result){
+            var addresslist = [];
+            $.each(result, function(key, val) {
+                addresslist.push('<label class="cell-item"><span class="cell-left">'+val.ad_address+'<br/>'+val.ad_name+'('+val.ad_phone+')</span> <label class="cell-right"></label></label>');
+            });
+            $('<div/>', {
+                html: addresslist.join('')
+            }).appendTo('#addresscont');
+        });
+
+        //获取订单状态
+        $.post("/getstate",{orid:orid},function(result){
+            $("#order_time").text(result[0].or_time);
+            var state=result[0].or_state;
+            if(state==1){
+                $("#or_state").text("未接单");
+                $("#delroder").show();
+            }else if(state==2){
+                $("#or_state").text("配送中");
+            }else {
+                $("#or_state").text("已完成");
+            }
+        });
+
+        //取消订单
+        !function (win, $) {
+            var dialog = win.YDUI.dialog;
+
+            $('#btn_delfood').on('click', function () {
+                dialog.confirm('订单信息', '您确定要取消订单么？', function () {
+
+                    $.post("/delorder", {orid:orid}, function (result) {
+                        if (result == 200) {
+                            dialog.toast('订单已取消', 'none', 1000);
+                            location.href = "/order"
+                        } else {
+                            dialog.toast('取消失败，请重新操作', 'none', 2000);
+                        }
+                    });
+
+                });
+
+            });
+
+        }(window, jQuery);
+
+    });
+
+
+</script>
+
+</body>
+</html>

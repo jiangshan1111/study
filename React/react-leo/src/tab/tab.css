@@ -1,0 +1,21 @@
+.tabTop{
+  width: 60px;
+  height: 20px;
+  margin-right: 20px;
+  background: white;
+  border:1px solid rgb(210,210,210);
+  cursor: pointer;
+}
+.tabTop.active{
+  background: red;
+}
+.tabBottom{
+  width: 100px;
+  height: 100px;
+  background: white;
+  border:1px solid rgb(210,210,210);
+  display: none;
+}
+.tabBottom.active{
+  display: block;
+}

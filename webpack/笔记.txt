@@ -1,0 +1,151 @@
+一.webpack开发
+1，npm init 先建一个package.json文件
+2，npm install --save-dev webpack webpack-cli 安装webpack和webpack脚手架
+3，npm webpack 执行命令
+4.在package.json中添加
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+5.新建webpack.config.js
+6.在webpack.config.js中书写内容
+  类似于
+  let path = require('path');
+  module.exports = {
+    //mode模式 默认两种 production(生产环境：代码压缩) development(开发环境：代码不压缩)
+    mode: 'development',
+    entry: './src/index.js',//入口
+    output: {
+      filename: 'bundle.js',//打包后的文件名
+      path: path.resolve('dist') //路径必须是一个绝对路径 表示根目录下面的dist文件夹
+    }
+  }
+
+
+
+二.webpack-dev-server的安装和配置
+1.安装 npm install --save-dev webpack-dev-server
+2.在package.json中添加
+  "scripts": {
+    "dev": "webpack-dev-server"
+  },
+3.在webpack.config.js中书写内容
+  类似于
+  let path = require('path');
+  module.exports = {
+    //mode模式 默认两种 production(生产环境：代码压缩) development(开发环境：代码不压缩)
+    mode: 'development',
+    entry: './src/index.js',//入口
+    output: {
+      filename: 'bundle.js',//打包后的文件名
+      path: path.resolve('dist') //路径必须是一个绝对路径 表示根目录下面的dist文件夹
+    },
+    devServe: {//开启服务器配置
+      port: "8080",//端口
+      host: "localhost",//ip地址localhost本地，0.0.0.0可以访问网络地址
+      progress: true,//开启进度条
+      contentBase: "./build",//默认打开目录
+      //open:true,//自动打开浏览器
+      compress: true//启动gzip压缩
+      //跨域
+      proxy: {
+        '/api': {
+          target: 'http://10.1.2.147:8080',
+          changeOrigin: true,//是否跨域
+          pathRewrite: {
+            '^/api': ''//需要rewrite的，
+          }
+        }
+      }
+    }
+  }
+
+
+三.使用html模板插件（解决启动webpack-dev-server时必须生成build文件夹）
+  1.安装html-webpack-plugin
+    npm install --save-dev html-webpack-plugin
+  2.配置HTML模板插件
+    let HtmlWebpackPlugin = require("html-webpack-plugin");
+    //一个数组存放所以插件
+    plugins:[
+      //配置这个模板后contentBase:'./build'不生效
+      new HtmlWebpackPlugin({
+        //生成两个看不到的文件
+        template:"./public/index.html",
+        filename:"index.html",
+        minify:{
+          //折叠换行true不换行
+          collapseWhitespace:true
+        },
+        hash:true //生产环境下生成hash戳
+      })
+    ]
+
+  
+四.loaders
+  配置加载css样式
+  1.安装css loader
+    npm install --save-dev css-loader style-loader mini-css-extract-plugin
+    css-loader:解析@import这种语法
+    style-loader:把css插入到head标签中
+    mini-css-extract-plugin:抽离css样式让index.html里面的css样式变成link引入
+  2.配置css loader
+    loader是有顺序的默认从右向左执行，从下往上执行。
+    loader可以写成字符串:use:'css-loader',写成数组['css-loader'],写成对象
+    [{loader:'css-loader'}]对象的好处可以传好多参数
+
+  在css中引入其它css @import('../index.css)
+  在index.js中引入css渲染 import './assets/css/common/public.css';
+  书写内容
+    let MiniCssExtractPlugin = require('mini-css-extract-plugin')
+    plugins:[
+      new MiniCssExtractPlugin({
+        filename:'static/css/main.css'
+      })
+    ]
+    
+    规则（放在webpack底层）
+    module: {
+      rules: [{
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,//都放到了上面的main.css里
+          {
+            loader: 'css-loader'
+          }
+        ]
+      }]
+    }
+
+
+五.post-css处理css兼容(css3前自动加-webkit-)
+  1.安装post-css 
+    npm install --save postcss-loader autoprefixer
+  2.配置
+    let postCss = require('autoprefixer')({
+      "overrideBrowserslist":[
+        'last 10 Chrome version',
+        'last 5 Firefox version',
+        'Safari >= 6',
+        'ie > 8'
+      ]
+    })
+    放在 module里
+     module: {
+      rules: [{
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,//都放到了上面的main.css里
+          {
+            loader: 'css-loader'
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              plugins: [
+                postCss
+              ]
+            }
+          }
+        ]
+      }]
+    }

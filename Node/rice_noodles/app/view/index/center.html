@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <!-- 引入YDUI样式 -->
+    <link rel="stylesheet" href="/public/index/css/ydui.css" />
+    <!-- 引入YDUI自适应解决方案类库 -->
+    <script src="/public/index/css/ydui.flexible.js"></script>
+</head>
+<body>
+<section class="g-flexview">
+
+    <header class="m-navbar">
+        <div class="navbar-center"><span class="navbar-title">个人中心</span></div>
+    </header>
+
+    <section class="g-scrollview butcenter">
+        <input type="button" class="btn-block btn-hollow" value="收货地址" id="address"/>
+        <input type="button" class="btn-block btn-hollow" value="个人信息"/>
+        <input type="button" class="btn-block btn-hollow" value="退出" id="loginout"/>
+    </section>
+    <footer class="m-tabbar">
+        <a href="/" class="tabbar-item">
+            <span class="tabbar-icon">
+                <i class="icon-compose"></i>
+            </span>
+            <span class="tabbar-txt">点餐</span>
+        </a>
+        <a href="javascript:;" class="tabbar-item" id="myorder">
+            <span class="tabbar-icon">
+                <i class="icon-feedback"></i>
+            </span>
+            <span class="tabbar-txt">订单</span>
+        </a>
+        <a href="javascript:;" class="tabbar-item tabbar-active" id="mycont">
+            <span class="tabbar-icon">
+                <i class="icon-ucenter-outline"></i>
+            </span>
+            <span class="tabbar-txt">我的</span>
+        </a>
+    </footer>
+</section>
+
+
+<!-- 引入jQuery 2.0+ -->
+<script src="/public/index/css/jquery.min.js"></script>
+<!-- 引入YDUI脚本 -->
+<script src="/public/index/css/ydui.js"></script>
+<!-- 获取cookie脚本 -->
+<script src="/public/index/css/jquery.cookie.js"></script>
+<script>
+    $("#address").click(function () {
+        location.href="/address";
+    });
+    !function (win, $) {
+        var dialog = win.YDUI.dialog;
+
+        /* 顶部提示框 */
+        $('#loginout').on('click', function () {
+            dialog.notify('退出登录', 3000, function(){
+                location.href="/loginout";
+            });
+        });
+    }(window, jQuery);
+</script>
+
+</body>
+</html>

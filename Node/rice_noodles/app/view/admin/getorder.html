@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>接单页面</title>
+    <link rel="stylesheet" href="/public/admin/css/layui.css"  media="all">
+    <script src="/public/index/css/jquery.min.js"></script>
+    <style>
+        ul { list-style-type: none;}
+        li { margin: 10px 0;}
+        input.labelauty + label { font: 12px "Microsoft Yahei";}
+    </style>
+</head>
+<body>
+<div style="padding: 30px;">
+    <div id="deusercont">
+
+    </div>
+    <button class="layui-btn" id="getor">立刻接单</button>
+</div>
+
+<script src="/public/admin/layui.all.js" charset="utf-8"></script>
+
+<script>
+    $(document).ready(function(){
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        };
+        var orderid = getUrlParam('id');
+        $.get("/deuserinfo",function(result){
+            var deuser = [];
+            $.each(result, function(key, val) {
+                deuser.push('<li>'+val.d_name+'<input type="radio" name="deuser" data-labelauty="'+val.d_name+'" value="'+val.d_phone+'"></li>');
+            });
+            $('<ul/>', {
+                html: deuser.join('')
+            }).appendTo('#deusercont');
+
+        });
+        
+        $("#getor").click(function () {
+            var deuserphone=$("input[type='radio']:checked").val();
+            if(!deuserphone){
+                layer.msg("请选择外卖小哥。");
+            }else {
+                $.post("/getorder_do",{orderid:orderid,deuserphone:deuserphone},function(data){
+                    if(data==200){
+                        layer.msg("接单成功");
+                        window.parent.location.reload();
+                    }else {
+                        layer.msg("接单失败，请稍后重试");
+                    }
+                });
+
+            }
+        });
+
+    });
+
+</script>
+
+</body>
+</html>
