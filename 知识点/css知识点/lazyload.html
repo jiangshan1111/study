@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .lazy-background {
+      height: 600px;
+      width: 500px;
+      background-image: url("../images/bubble.png"); /* 占位图片 */
+    }
+
+    .lazy-background.visible {
+      background-image: url("../images/long.webp"); /* 真正的图片 */
+    }
+  </style>
+</head>
+<body>
+  <div class="lazy-background">
+    <h1>Here's a hero heading to get your attention!</h1>
+    <p>Here's hero copy to convince you to buy a thing!</p>
+    <a href="/buy-a-thing">Buy a thing!</a>
+  </div>
+  <div class="lazy-background">
+    <h1>Here's a hero heading to get your attention!</h1>
+    <p>Here's hero copy to convince you to buy a thing!</p>
+    <a href="/buy-a-thing">Buy a thing!</a>
+  </div>
+  <div class="lazy-background">
+    <h1>Here's a hero heading to get your attention!</h1>
+    <p>Here's hero copy to convince you to buy a thing!</p>
+    <a href="/buy-a-thing">Buy a thing!</a>
+  </div>
+  <div class="lazy-background">
+    <h1>Here's a hero heading to get your attention!</h1>
+    <p>Here's hero copy to convince you to buy a thing!</p>
+    <a href="/buy-a-thing">Buy a thing!</a>
+  </div>
+  <script>
+    //Intersection observer目前只能在Chrome63+和firefox58+使用
+    document.addEventListener("DOMContentLoaded", function() {
+      var lazyBackgrounds = [].slice.call(document.querySelectorAll(".lazy-background"));
+
+      if ("IntersectionObserver" in window) {
+        let lazyBackgroundObserver = new IntersectionObserver(function(entries, observer) {
+          console.log(entries,observer)
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              lazyBackgroundObserver.unobserve(entry.target);
+            }
+          });
+        });
+
+        lazyBackgrounds.forEach(function(lazyBackground) {
+          lazyBackgroundObserver.observe(lazyBackground);
+        });
+      }
+    });
+
+    // document.addEventListener("DOMContentLoaded", function() {
+    //   let lazyImages = [].slice.call(document.querySelectorAll(".lazy-background"));
+    //   let active = false;
+
+    //   const lazyLoad = function() {
+    //     if (active === false) {
+    //       active = true;
+
+    //       setTimeout(function() {
+    //         lazyImages.forEach(function(lazyImage,index) {
+    //           console.log(index,lazyImage.getBoundingClientRect(),window.innerHeight)
+    //           if ((lazyImage.getBoundingClientRect().top <= window.innerHeight && lazyImage.getBoundingClientRect().bottom >= 0) && getComputedStyle(lazyImage).display !== "none") {
+    //             lazyImage.classList.add("visible");
+    //             lazyImages = lazyImages.filter(function(image) {
+    //               return image !== lazyImage;
+    //             });
+
+    //             if (lazyImages.length === 0) {
+    //               document.removeEventListener("scroll", lazyLoad);
+    //               window.removeEventListener("resize", lazyLoad);
+    //               window.removeEventListener("orientationchange", lazyLoad);
+    //             }
+    //           }
+    //         });
+
+    //         active = false;
+    //       }, 200);
+    //     }
+    //   };
+    //   lazyLoad()
+    //   document.addEventListener("scroll", lazyLoad);
+    //   window.addEventListener("resize", lazyLoad);
+    //   window.addEventListener("orientationchange", lazyLoad);
+    // });
+  </script>
+</body>
+</html>
