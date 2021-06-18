@@ -1,4 +1,5 @@
 <template>
+<div>
   <h1>{{ msg }}</h1>
   <a-button @click="changeMsg">212</a-button>
   <a-table :columns="columns"
@@ -32,6 +33,7 @@
       </div>
     </template>
   </a-table>
+</div>
   <!-- <a-table :columns="columns"
            :data-source="dataSource"
            :customRow="customRow"

@@ -66,6 +66,13 @@
     componentWillMount 组件挂载前
     属性能找到（例如this.props，states） dom找不到
     componentDidMount  组件挂载后
+    shouldComponentUpdate  组件是否需要更新
+
+    shouldComponentUpdate(){
+      return false //数据改变不会更新组件
+      return true //数据改变更新组件（默认）
+    }
+
     componentWillUpdate  组件更新前
     componentDidUpdate  组件更新后
     componentWillUnMount  组件卸载前
@@ -245,6 +252,11 @@
 四、插槽（Portals）
     this.props.children 可以获取组件的内容 比如<Button>aaaasas</Button>
     设置默认props Button.defaultProps = {type:'button'}
+    类似于vue slot
+    可以直接替换组件 比如 <Card>
+      <Text>123</Text>
+    </Card>
+    Card里的children就是<Text>123</Text>
 
 
 五、react.lazy()和 react.Suspense()
@@ -524,9 +536,16 @@
             return{
                 state:state
             }
-        })(GoodsDetails)
+        })(GoodsDetails) //把redux的state赋值给GoodsDetails的props
         将路由组件与redux关联起来
 
+        connect(function(a,b){
+
+        })(组件)  connect第一个方法里有两个参数
+        第一个参数为state相关的函数 
+          函数内有两个参数，第一个参数是state，第二个参数为组件的props
+          return 出的结果会被赋值到props
+        第二个参数是actions数组 可以把redux的actionCreator注册到组件的props上
 
     下载redux 和 react-redux
 
@@ -550,7 +569,7 @@
             counter:counterReducer,
             user:userReducer
         }),applyMiddleware(thunk))
-
+createStore 有三个参数 第一个reducers 第二个初始state，第三个增强插件
         使用dispatch
         this.props.disPatch((disPatch,getState)=>{
             disPatch({type:'',data:{}})
@@ -619,7 +638,7 @@
             13717628483 123456
             success function用箭头函数 就可以改变this指向 指向对应的react或者vue
         url-search-params-polyfill axios可以兼容低版本ie
-        whatwg-fetch fetch可以兼容低版本ie
+        whatwg-fetch fetch可以兼容低版本ie fetch是浏览器原生方法
 
         可以使用let params = new URLSearchParams()
                 params.append('12',12)

@@ -1,7 +1,9 @@
 <template>
-  {{msg}}
-  <HelloWorld v-bind:msg="msg"
-              v-on:update:msg="msg = $event" />
+  <div>
+    {{msg}}
+    <HelloWorld v-bind:msg="msg"
+                v-on:update:msg="msg = $event" />
+  </div>
 </template>
 
 <script setup>

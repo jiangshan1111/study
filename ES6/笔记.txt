@@ -302,6 +302,7 @@
       var arr2 = [...a1] //和上述ES5效果一至
 
     新增方法
+    includes() 查看数组中是否有这个元素
     Array.from()
       可以将类数组以及可遍历的对象转换成数组 比如 obj和set （obj需要加上length：长度这个属性，下标得是1，2，3）
     Array.copyWithin()
