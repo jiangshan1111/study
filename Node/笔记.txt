@@ -1231,6 +1231,58 @@
               res.sendFile(process.cwd()+'/view/index.html')
             })
         }
+
+        多级路由
+        创建一个routes目录，专门用于放置路由文件，通过module.exports导出供外部使用。
+        const express = require('express');
+        let app = express();
+        app.listen(8888);
+        
+        //添加两个路由到应用上
+        app.use('/users', require('./routes/users'));
+        app.use('/order', require('./routes/order'));
+        
+        //404判断
+        app.use(function (req, res) {
+            res.send('404 not found');
+        });
+
+
+
+        users.js的代码：
+        const express = require('express');
+        
+        let router = express.Router();
+        
+        router.get('/', function (req, res) {
+            res.send('用户首页');
+        });
+        
+        router.get('/:id', function (req, res) {
+            res.send(`${req.params.id} 用户信息`);
+        });
+        
+        //导出该路由
+        module.exports = router;
+
+
+
+        
+        order.js的代码：
+        const express = require('express');
+        
+        let router = express.Router();
+        
+        router.get('/', function (req, res) {
+            res.send('订单首页');
+        });
+        
+        router.get('/:id', function (req, res) {
+            res.send(`${req.params.id} 订单信息`);
+        });
+        
+        //导出该路由
+        module.exports = router;
     4.连接数据库
 
   3.2 正式项目
@@ -1279,4 +1331,49 @@
           现在还没有可以访问，还要去阿里云控制台配置一下端口(因为express默认端口是3000，所以这里只配置3000的)、
           
           最后访问你的 公有ip:端口号，如：123.123.123.123:3000
+
+四.处理文件 formidable
+五 使用multer上传文件
+  当前端使用formdata上传文件时
+  var multer = require('multer')
+  var storage = multer.diskStorage({
+
+    //指定文件上传到服务器的路径
+      destination: function (req, file, cb) {
+        cb(null, process.cwd()+'/public')
+      },
+    
+    //指定上传到服务器文件的名称
+      filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now())
+      }
+  })
+  var upload = multer({ storage: storage })
+
+  //formdata中的值是file时
+  var cpUpload = upload.fields([{ name: 'file', maxCount: 1 }, { name: 'file', maxCount: 8 }])
+
+  //路由使用
+  app.route('/uploadFile').post(cpUpload,index.uploadFile)
+
+  //index.uploadFile
+  this.uploadFile = function (req, res) {
+    
+    console.log(req.files.file);  // 上传的文件信息
+    var des_file = process.cwd() + "/public/" + req.files.file[0].originalname;
+    fs.readFile( req.files.file[0].path, function (err, data) {
+        fs.writeFile(des_file, data, functioon (err) {
+          if( err ){
+              console.log( err );
+          }else{
+                response = {
+                    message:'File uploaded successfully', 
+                    filename:req.files.file[0].originalname
+              };
+          }
+          res.json(response);
+        });
+    });
+  }
+
 

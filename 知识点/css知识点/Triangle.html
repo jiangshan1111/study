@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    #triangle-up {
+    width: 0;
+    height: 0;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-top: 50px solid #e0e0e0;
+}
+.divBox{
+  float: left;
+  width: 50px;
+  height: 50px;
+  border-radius: 50% 50% 0 0;
+  margin-bottom: -25px;
+  background: #e0e0e0;
+}
+.divBox:nth-of-type(1){
+  border-radius: 50% 30% 0 0;
+}
+.divBox:nth-of-type(2){
+  border-radius: 30% 50% 0 0;
+}
+.zfx{
+  width: 100px;
+    height: 100px;
+    background: #e0e0e0;
+    transform: rotate(
+45deg
+);
+    margin-left: 37px;
+    margin-top: -63px;
+}
+.heartTop{
+  overflow: hidden;
+}
+.heartTop div{
+  float: left;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    /* margin-left: -7px; */
+    margin-right: -26px;
+}
+  </style>
+</head>
+<body>
+  <div style="    overflow: hidden;">
+    <div class="divBox"></div>
+    <div class="divBox"></div>
+  </div>
+  <div id="triangle-up"></div>
+  <div class="heartTop">
+    <div></div>
+    <div></div>
+  </div>
+  <div class="zfx">
+
+  </div>
+</body>
+</html>
