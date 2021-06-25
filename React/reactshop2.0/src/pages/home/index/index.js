@@ -20,13 +20,14 @@ class  IndexComponent extends React.Component{
         }
         this.bScroll=true;
     }
-    componentDidMount(){
+  componentDidMount () {
         setScrollTop(global.scrollTop.index);
         this.getSwiper();
         this.getNav();
         this.getGoodsLevel();
         this.getReco();
-        window.addEventListener("scroll",this.eventScroll.bind(this),false);
+      window.addEventListener("scroll", this.eventScroll.bind(this), false);
+      
     }
     componentWillUnmount(){
         this.bScroll=false;

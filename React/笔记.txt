@@ -3,6 +3,18 @@
     2.npm run eject 将webpack配置暴露出来
     3.npm start 运行 如果报错删除node_modules 重新下载（npm install）
     4.npm build 打包一个文件 npm install serve 注册一个服务 serve -s build
+      打包后资源改为相对路径 webpack.config.prod.js publicPath改为'./'
+
+      nodejs 改变访问路径
+      app.route('/shangcheng').get(function (req,res) {
+        res.sendFile(process.cwd() + '/public/build/');
+      })
+      http://localhost:8080/shangcheng 访问的是/public/build/index.html 
+
+      app.use('/shangcheng', express.static(process.cwd() + '/public/build'));
+      将/public/build静态资源绑定在http://localhost:8080/shangcheng下
+
+
     5.更改webpack.config.js配置
     166行 
         : isEnvDevelopment && 'cheap-module-source-map',
@@ -747,7 +759,13 @@ createStore 有三个参数 第一个reducers 第二个初始state，第三个�
             }
         },
 
+        原理
+        浏览器有同源策略,但是服务器没有.
+        本地的网站请求的数据会通过我们的服务器进行代理,由服务器发送真实的数据请求到目标数据后台.
 
+        目标数据后台把数据返回给我们自己的后台,在经由我们自己的后台转发给我们自己的前台.
+        本地运行框架时node起了一个本地服务器 可以使用proxy代理
+        打包后需要后端nginx来配置
 
 
 
