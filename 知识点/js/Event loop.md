@@ -8,7 +8,8 @@ event loop它最主要是分三部分：主线程、宏队列（macrotask）、�
     就是访问到的script标签里面包含的内容，或者是直接访问某一个js文件的时候，里面的可以在当前作用域直接执行的所有内容（执行的方法，new出来的对象等）
 
   宏队列（macrotask）
-    setTimeout、setInterval、setImmediate、I/O、UI rendering
+    setTimeout、setInterval、setImmediate、I/O、UI rendering， DOM 事件回调、ajax 回调
+    setImmediate和setTimeout大致一样 监听的方式不同 时间精度 只有ie10和node支持
 
   微队列（microtask）
     promise.then、process.nextTick

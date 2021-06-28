@@ -418,7 +418,7 @@
     调用场景
       解构赋值，扩展运算符，yield*，其他场景
 
-  6.3 Generator[ˈdʒenəreɪtər] 
+  6.3 Generator[ˈdʒenəreɪtər]  yield[jiːld]
     可以理解为是一个状态机，封装了多个内部状态。
     可以看作是一个遍历器对象生成函数。
     返回的遍历器对象，可以依次遍历Generator函数内部的每一个状态。
