@@ -21,3 +21,31 @@ $(function() {
 $(function() {}) 是$(document).ready(function()的简写, 这个函数什么时候执行的呢？
 
 答案：DOM 加载完毕之后执行。
+
+
+function(){
+
+//所需要执行的代码
+
+}()
+
+被称为"自执行函数" 需要用一个变量引用，否则会报错 
+(function(){
+
+})() 不需要引用
+
+!function(a){
+  console.log(a);  //firebug输出12345,使用！运算符
+}(12345);
+  
++function(a){
+  console.log(a);  //firebug输出123456,使用+运算符
+}(123456);
+  
+-function(a){
+  console.log(a);  //firebug输出1234567,使用-运算符
+}(1234567);
+  
+var fn=function(a){
+  console.log(a);  //firebug输出12345678，使用=运算符
+}(12345678)

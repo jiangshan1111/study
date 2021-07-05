@@ -35,6 +35,8 @@ Flex（Flexible Box）布局 称为 "弹性布局"，可以为网页的布局提
     space-between：项目两端对齐，项目之间的间隔都相等
     space-around：每个项目两侧的间隔相等
 
+    justify-content: space-evenly可以使每个元素之间和元素距离边距的距离都相等，但是兼容性比较差（iphone的SE上不支持，会失效，相当于没有设置）
+
   5.align-items(属性决定项目在交叉轴上如何对齐--一般是垂直对齐)
     flex-start 从上而下
     flex-end 从下到上
