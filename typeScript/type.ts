@@ -102,6 +102,109 @@ let f7: (a: string) => boolean = function (a: string):boolean {
     return true
   }
 
+//类
+class Student{
+  name:string;
+  age: number;
+  constructor(name:string,age: number) {
+    this.name = name
+    this.age  = age
+  }
+  show() {
+    console.log(this.name+this.age)
+  }
+  calc(num1: number, num2: number):number{
+    return num1 + num2
+  }
+}
+let stu1 = new Student('123',1234)
+let stu2 = new Student('11223',123124)
+stu1.show()
+stu2.show()
+
+//继承
+class Student1 extends Student{
+  grade: number;
+  constructor(name:string,age: number,grade?:number) {
+    super(name, age)
+    this.grade = grade?grade:0
+  }
+  show1() {
+    console.log(this.grade)
+  }
+}
+var stu11 = new Student1('12', 123)
+stu11.show1()
+
+
+//修饰符
+class Person{
+  name: string;//默认就是public
+  protected age: number = 123
+  private sex:string = '男'
+  constructor() {
+    this.name = '123'
+  }
+  show() {
+    console.log(this.age)
+    console.log(this.sex)
+    console.log(this.name)
+  }
+  private show1() {
+    console.log(this.age)
+    console.log(this.sex)
+    console.log(this.name)
+  }
+}
+let p = new Person()
+p.show();
+// p.show1();//报错
+// console.log(p.age)//报错
+// console.log(p.sex)//报错
+
+class PersonC extends Person{
+  constructor() {
+    super()
+    // console.log(this.sex) //报错
+  }
+}
+
+//封装
+class fengzhuang{
+  private _sex: string = '12123'
+  //存取器
+  get sex() {
+    return this._sex
+  }
+  set sex(value) {
+    //可以控制值 写方法 比如只能输入男
+    this._sex = value
+  }
+}
+let fz = new fengzhuang()
+fz.sex = 'sad'
+console.log(fz.sex)
+
+//抽象类
+abstract class animal{
+  name: string;
+  constructor(name: string) {
+    this.name = name
+  }
+  //抽象方法
+  abstract cry():any;
+}
+class Dog extends animal{
+  constructor(name: string) {
+    super(name)
+  }
+  cry() {
+    
+  }
+}
+// let an = new animal()//报错
+let dog = new Dog('str')
+
 
 
 export { }
