@@ -1,0 +1,13 @@
+{
+  "login.account": "Account",
+  "login.pwd": "Password",
+  "login.submit": "Login",
+  "login.copyright": "All rights reserved",
+  "login.errMsg1": "User name or password not correct",
+  "login.errMsg2": "User name not exists",
+  "login.errMsg3": "Server error",
+  "grid.cover.title": "Grid Analysis",
+  "grid.cover.content": "Retail research has been upgraded to an unprecedented level: full coverage of land area, fine 1*1 kilometer grid, large data depth insight in the human field, and full access to big data in the era of marketing and shopping.",
+  "grid.cover.btn": "Enter the grid",
+  "SIMPLE": "This is <span style='color:red'>HTML</span>"
+}
