@@ -1,9 +1,12 @@
 /*eslint-disable*/
 import axios from 'axios';
+import { message } from 'antd';
 // import {fetch} from 'whatwg-fetch';
 
 export function request(url,method="get",data={},config={}) {
-     return axiosRequest(url, method, data,config);
+     return axiosRequest(url, method, data,config).catch((error) => {
+      console.log(error)
+    });;
     // return fetchRequest(url, method,data);
 }
 
@@ -12,6 +15,9 @@ export function requestString(url,method="get",data={},config={}) {
     headers: {
       'Content-Type': "application/json"
     }
+  }).catch((error) => {
+    message.error('服务器错误')
+    console.log(error)
   });
  // return fetchRequest(url, method,data);
 }

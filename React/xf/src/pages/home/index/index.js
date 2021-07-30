@@ -161,10 +161,9 @@ class Index extends React.Component {
         )
         message.success('切换成功')
       }).catch(() => {
-        message.error('切换失败')
         this.setState(
           {
-            loading: false
+            loading: false,
           }
         )
       })
@@ -275,17 +274,24 @@ class Index extends React.Component {
     }
     //如果是通过服务包来获取卡片的方式，需要将state.url置为每个卡片点击时的ip
     updateUrl (url) {
-      if (this.state.cardsSource === 3) {
-        this.setState({
-          url:url
-        })
-      }
+      return new Promise((resolve) => {
+        if (this.state.cardsSource === 3) {
+          this.setState({
+            url:url
+          }, () => {
+            resolve('Next')
+          })
+        } else {
+          resolve()
+        }
+      })
     }
     //弹出修改yml弹框
     updateYml (server_name, url) {
-      this.updateUrl(url)
-      this.setState({ updateYml: Object.assign({}, this.state.updateYml, { visible: true,confirmLoading:true, server_name: server_name,ymlContent:"" }) }, () => {
-        this.searchYml()
+      this.updateUrl(url).then((res) => {
+        this.setState({ updateYml: Object.assign({}, this.state.updateYml, { visible: true,confirmLoading:true, server_name: server_name,ymlContent:"" }) }, () => {
+          this.searchYml()
+        })
       })
     }
     //yml内容获取
@@ -370,9 +376,10 @@ class Index extends React.Component {
     }
     //查看日志弹框弹出
     visibleInfo (server_name, url) {
-      this.updateUrl(url)
-      this.setState({ info: Object.assign({}, this.state.info, { visible: true, server_name: server_name,cond:'200',info:"" }) }, () => {
-        this.viewInfo()
+      this.updateUrl(url).then(() => {
+        this.setState({ info: Object.assign({}, this.state.info, { visible: true, server_name: server_name,cond:'200',info:"" }) }, () => {
+          this.viewInfo()
+        })
       })
     }
     //加解密
@@ -433,8 +440,6 @@ class Index extends React.Component {
           settingCommon: Object.assign({}, this.state.settingCommon, { basicLoading: false }),
           cards:arr
         })
-      }).catch((error) => {
-        console.log(error)
       })
     }
     //下载包
@@ -444,36 +449,38 @@ class Index extends React.Component {
     //获取包版本信息
     viewBowerNo (el,url) {
       if (el.server_name !== 'Redis') {
-        this.updateUrl(url)
-        this.setState({bowerNo:Object.assign({},this.state.bowerNo,{ visible: true,server_name:el.server_name })})
-        requestString(this.apiUrl()+'/serverConfig/viewJars', 'post', el.server_name).then((res) => {
-          if (res) {
-            this.setState({
-              bowerNo: Object.assign(
-                {},
-                this.state.bowerNo,
-                {
-                  hisVList: res.hisV.split(','),
-                  runV: res.runV,
-                  confirmLoading: false,
-                  hisVSelect:res.hisV.split(',')[0]
-                }
-              )
-            })
-          }
+        this.updateUrl(url).then(() => {
+          this.setState({bowerNo:Object.assign({},this.state.bowerNo,{ visible: true,server_name:el.server_name })})
+          requestString(this.apiUrl()+'/serverConfig/viewJars', 'post', el.server_name).then((res) => {
+            if (res) {
+              this.setState({
+                bowerNo: Object.assign(
+                  {},
+                  this.state.bowerNo,
+                  {
+                    hisVList: res.hisV.split(','),
+                    runV: res.runV,
+                    confirmLoading: false,
+                    hisVSelect:res.hisV.split(',')[0]
+                  }
+                )
+              })
+            }
+          })
         })
       }
     }
     //常用配置修改
     settingCommon (server_name,index, url) {
-      this.updateUrl(url)
-      this.setState({ settingCommon: Object.assign({}, this.state.settingCommon, { visible: true,server_name:server_name,server_index:index}) })
-      requestString(this.apiUrl()+'/serverConfig/getServerConfig', 'post', server_name).then((res) => {
-        if (res) {
-          this.setState({
-            settingCommon: Object.assign({},this.state.settingCommon,res,{confirmLoading: false})
-          })
-        }
+      this.updateUrl(url).then(() => {
+        this.setState({ settingCommon: Object.assign({}, this.state.settingCommon, { visible: true,server_name:server_name,server_index:index}) })
+        requestString(this.apiUrl()+'/serverConfig/getServerConfig', 'post', server_name).then((res) => {
+          if (res) {
+            this.setState({
+              settingCommon: Object.assign({},this.state.settingCommon,res,{confirmLoading: false})
+            })
+          }
+        })
       })
     }
     //获取ip
@@ -577,42 +584,48 @@ class Index extends React.Component {
       if (this.isAdmin()) {
         return
       }
-      this.updateUrl(apiUrl)
-      let url = '' //接口
-      let msg = ''//提示
-      let status = ''//状态
-      switch (type) {
-        case 'start':
-          url = el.server_name !== 'Redis' ? (this.apiUrl() + '/serverConfig/startService'):(this.apiUrl() + '/serverConfig/startRedis')
-          msg = '服务启动失败！'
-          status = '运行中'
-          break;
-        case 'restart':
-          url = this.apiUrl()+'/serverConfig/restartService'
-          msg = '服务重启失败！'
-          status = '运行中'
-          break;
-        case 'stop':
-          url = el.server_name !== 'Redis' ? (this.apiUrl()+'/serverConfig/stopService'):(this.apiUrl()+'/serverConfig/stopRedis')
-          msg = '服务停止失败！'
-          status = '已停止'
-          break;
-        default:
-          break;
-      }
-      //先显示加载中，再调接口
-      this.loadingCard(index,'start')
-      requestString(url, 'post', JSON.stringify({
-        ip: el.ip,
-        port: el.port,
-        servName: el.server_name
-      })).then((res) => {
-        if (res === "fail") {
-          message.error(msg,2)
-          this.loadingCard(index,'end')
-        } else {
-          this.loadingCard(index,'end',status)
+      this.updateUrl(apiUrl).then(() => {
+        let url = '' //接口
+        let msg = ''//提示
+        let status = ''//状态
+        let successMsg = ''//成功提示
+        switch (type) {
+          case 'start':
+            url = el.server_name !== 'Redis' ? (this.apiUrl() + '/serverConfig/startService'):(this.apiUrl() + '/serverConfig/startRedis')
+            msg = '服务启动失败！'
+            successMsg = '服务启动成功！'
+            status = '运行中'
+            break;
+          case 'restart':
+            url = this.apiUrl()+'/serverConfig/restartService'
+            msg = '服务重启失败！'
+            successMsg = '服务重启成功！'
+            status = '运行中'
+            break;
+          case 'stop':
+            url = el.server_name !== 'Redis' ? (this.apiUrl()+'/serverConfig/stopService'):(this.apiUrl()+'/serverConfig/stopRedis')
+            msg = '服务停止失败！'
+            successMsg = '服务停止成功！'
+            status = '已停止'
+            break;
+          default:
+            break;
         }
+        //先显示加载中，再调接口
+        this.loadingCard(index,'start')
+        requestString(url, 'post', JSON.stringify({
+          ip: el.ip,
+          port: el.port,
+          servName: el.server_name
+        })).then((res) => {
+          if (res === "fail") {
+            message.error(msg,2)
+            this.loadingCard(index,'end')
+          } else {
+            message.success(successMsg,2)
+            this.loadingCard(index,'end',status)
+          }
+        })
       })
     }
     //退出
@@ -647,13 +660,15 @@ class Index extends React.Component {
     }
     //换包弹框弹出
     bowerModalShow (el, url) {
-      this.updateUrl(url)
-      this.setState({bower:Object.assign({},this.state.bower,{ visibleBower: true,server_name:el.server_name })})
+      this.updateUrl(url).then(() => { 
+        this.setState({bower:Object.assign({},this.state.bower,{ visibleBower: true,server_name:el.server_name })})
+      })
     }
     //redis弹框弹出
     redisModalShow (url) {
-      this.updateUrl(url)
-      this.setState({redis:Object.assign({},this.state.redis,{ visible: true })})
+      this.updateUrl(url).then(() => { 
+        this.setState({redis:Object.assign({},this.state.redis,{ visible: true })})
+      })
     }
     componentWillUnmount() {
         window.removeEventListener("scroll",this.fnScrollTop)
