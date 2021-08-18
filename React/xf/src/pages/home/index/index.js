@@ -584,7 +584,8 @@ class Index extends React.Component {
       if (this.isAdmin()) {
         return
       }
-      this.updateUrl(apiUrl).then(() => {
+      this.updateUrl(apiUrl).then((res) => {
+        console.log(res,this.state.url,this.apiUrl())
         let url = '' //接口
         let msg = ''//提示
         let status = ''//状态

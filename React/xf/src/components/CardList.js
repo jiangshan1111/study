@@ -107,7 +107,7 @@ export default class CardsList extends React.Component{
                   {el.server_name}
                 </p>
                 <p className={Css['white-p']}>
-                  {el.ip}:{el.port}{this.renderSpan(el.server_status,el,index)}
+                  {el.ip}:{el.port}{this.renderSpan(el.server_status,el,index,el.ip_port)}
                 </p>
               </div>
             }/>
