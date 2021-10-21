@@ -10,19 +10,29 @@
   <div id="app"  >
     <p>{{msg}}</p>
     
-    <aaa ref="msg" @sontofa='sonToFa1'></aaa>
+    <aaa ref="msg" @sontofa='sonToFa1'>
+      <jiangshan1></jiangshan1>
+      <jiangshan1></jiangshan1>
+      <jiangshan1></jiangshan1>
+    </aaa>
     <!-- <component   @sonToFa='sonToFa1' :is="componentA" title="kkk"></component> -->
   </div>
   <template id="jiang">
     <div>
       <h1>{{a}}{{title}}</h1>
+      <jiangshan1></jiangshan1>
+      <jiangshan1></jiangshan1>
+      <jiangshan1></jiangshan1>
       <button @click="getFather">点击</button>
     </div>
   </template>
   <script crossorigin="anonymous" integrity="sha384-BsohJuR1UmcDmCzWHDmbOFe5kYww52n7tWI9w3acK35v44HVjaAj73G0GD2Q/WnW" src="https://lib.baomitu.com/vue/2.0.0/vue.js"></script>
   <!-- <script  src="https://lib.baomitu.com/vue/1.0.0/vue.js"></script> -->
   <script>
-    var jiangshan = Vue.extend({
+     const jiangshan1 = Vue.extend({
+      template:`<div>1234</div>`
+    })
+    const jiangshan = Vue.extend({
       data:function(){
         return{
           a:111
@@ -42,6 +52,9 @@
       },
       mounted:function(){
         console.log(this)
+      },
+      components:{
+        jiangshan1:jiangshan1
       },
       template:'#jiang'
     })

@@ -12,8 +12,8 @@
   </div>
   <div id="app">
     <aaa>
-      <template name="header" #[slotname]="{msgc}">
-        <p>{{msgc}}</p>
+      <template name="header" #[slotname]="{msgc1}">
+        <p>{{msgc1}}</p>
       </template>
       <p>1234</p>
       <p>1234</p>
@@ -31,7 +31,7 @@
   <template id="jiang">
     <div>
       <slot v-bind:msga="msga">{{msga}}</slot>
-      <slot name="header" v-bind:msgc="msgc"></slot>
+      <slot name="header" v-bind:msgc1="msgc"></slot>
       <slot name="footer" v-bind:msgb="msgb"></slot>
     </div>
   </template>
