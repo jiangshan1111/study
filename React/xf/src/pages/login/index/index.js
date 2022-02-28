@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import config from '../../../assets/js/conf/config'
 import {login} from '../../../store/actions/user'
 class Login extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    console.log(this.props)
     this.state = {
       username: "",
       password:'',
@@ -17,9 +18,14 @@ class Login extends Component {
   }
   LoginIn () {
     const { username, password } = this.state
-    new Promise((resolve,reject) => {
-      this.props.login(resolve,{ username, password })
-    }).then((res) => {
+    // new Promise((resolve,reject) => {
+    //   this.props.login(resolve,{ username, password })
+    // }).then((res) => {
+    //     if (res === 'success') {
+    //       this.replacePage('home/index');
+    //     }
+    // })
+    this.props.login({ username, password }).then((res) => {
         if (res === 'success') {
           this.replacePage('home/index');
         }
@@ -70,6 +76,9 @@ class Login extends Component {
       )
   }
 }
-export default connect(null, {
+export default connect((state, props) => {
+  console.log(state, props)
+  return{user:state.user}
+}, {
   login
 })(Login)

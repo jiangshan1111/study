@@ -362,7 +362,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // let stu = new Student()
 // stu.print()
 var arr = [{ index: 1 }];
-console.log(arr);
 var Season;
 (function (Season) {
     Season["spring"] = "\u6625";

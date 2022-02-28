@@ -8,7 +8,7 @@ Flex（Flexible Box）布局 称为 "弹性布局"，可以为网页的布局提
 
 2. 容器的属性
   Flex-direction --属性决定主轴的方向
-  Flex-wrap -- 属性决定项目排不下时如何换行
+  Flex-wrap -- 属性决定项目排不下时如何换行 [ræp]
   Flex-flow -- flex-direction 和 flex-wrap 的简写形式
   justify-content -- 水平对齐
   align-items -- 垂直对齐

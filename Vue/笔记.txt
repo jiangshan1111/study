@@ -350,6 +350,17 @@
     子组件
     this.$emit("sontofa",this.a)
 
+10.5 插件
+  vue.use(pla)
+
+  pla.js
+    module.export {
+      install(vue){
+        vue.xxx
+        过滤器
+        自定义指令等
+      }
+    }
 
 11.slot - 位置
   基础用法
@@ -1417,4 +1428,41 @@
     页面的每次改动，不需要手动去刷新，可自动刷新。
     ，提高开发效率的，跟上线后没关系。
     比如配置了mutations的热重载，你添加新的mutations方法的时候就不会刷新页面，而是加载一段新的js，
-    
+
+  16.render
+    直接引入vue 引入的实际是 vue.runtime.esm.js
+    阉割版的 没有模板编译器
+    需要用 render:h=>h(app)
+
+  17.vue = 核心功能+模板解析器
+
+  18.全局事件总线
+    main.js
+      const Demo = Vue.extend({})
+      const d = new Demo()
+      Vue.prototype.x = d //为了使用$on,$off,$emit
+
+      或者
+
+      在vm里用beforeCreate创建一个
+      beforeCreate(){
+        //安装全局事件总线
+        Vue.prototype.$bus = this //为了使用$on,$off,$emit
+      }
+
+      在mounted(){} 挂载 this.x.$on 注册事件
+      this.x.$emit 触发事件
+
+    19.消息订阅与发布
+      pubsub-js 下载
+
+      import pubsub from 'pubsub-js'
+      //订阅
+      this.pubId = pubsub.subscribe('hello',function(a,b){
+        // a是消息名 b是参数
+      })
+      //发布
+      pubsub.publish('hello',function(){})
+      //取消订阅
+      pubsub.unsubscribe(this.pubId)
+

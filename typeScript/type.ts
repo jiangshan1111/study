@@ -403,7 +403,6 @@
 // let stu = new Student()
 // stu.print()
 let arr: Array<object> = [{ index: 1 }]
-console.log(arr)
 enum Season {
   spring = '春',//每个成员有两部分组成；名称和值
   summer = '夏',//每个成员有两部分组成；名称和值
@@ -411,6 +410,32 @@ enum Season {
   winter = '冬',//每个成员有两部分组成；名称和值
 }
 let s:Season = Season.autumn //春
+
+interface user{
+  id:number,
+  age:number
+}
+type PickUser = Pick<user,'id'>
+
+type petGroup = 'dog' | 'cat' | 'fish';
+interface IPetInfo {
+  name: string,
+  age:string
+}
+type IPets = Record<petGroup,IPetInfo>
+
+type IFoo = (uname:string,uAge:number) => {
+  name: string;
+  age:number
+}
+type Ibar = Parameters<IFoo>
+type T0 = ReturnType<IFoo>
+
+let objArr : {
+  id:string,
+  name?:number
+}[] = [{'id':'1'}]
+
 export { }
 
 

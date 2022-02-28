@@ -258,7 +258,7 @@ bezier(n,n,n,n);
       语法
         animation-iteration-count: n|infinite;
         n	定义动画播放次数的数值。	
-        infinite	规定动画应该无限次播放。	
+        infinite	规定动画应该无限次播放。	[ˈɪnfɪnət] 
 
 
     5.6 animation-direction
@@ -271,7 +271,7 @@ bezier(n,n,n,n);
         }
       
       语法
-        nimation-direction: normal|alternate;
+        nimation-direction: normal|alternate;[ˈɔːltərnət]
         normal	默认值。动画应该正常播放。	
         alternate	动画应该轮流反向播放。
 

@@ -84,7 +84,7 @@ module.exports = function(proxy, allowedHost) {
     // proxy,
     proxy:{
       '/api': {
-        target: 'http://192.168.250.240:55555',
+        target: 'http://172.16.101.179:55555',
         // changeOrigin: false, //是否跨域，如果target是域名则需要配置，如果是ip地址不需要
         pathRewrite: {
           '^/api': '' //需要rewrite的,

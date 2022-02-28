@@ -51,13 +51,34 @@
 //   }
 // }
 // export default App;
+import React, { useState } from 'react'
 
+function App() {
+  const [count, setCount] = useState(0);
 
+  function handleAlertClick() {
+    // setTimeout(() => {
+      alert('You clicked on: ' + count);
+    // }, 3000);
+  }
 
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+      <button onClick={handleAlertClick}>
+        Show alert
+      </button>
+    </div>
+  );
+}
+export default App;
 /*
 高阶组件
 */
-import React, { Component } from 'react'
+// import React, { Component } from 'react'
 // import ProxyHoc from './components/hoc/proxy'
 // import ExtendHoc from './components/hoc/extend'
 // import './App.css';
@@ -82,62 +103,62 @@ import React, { Component } from 'react'
 //   }
 // }
 
-class ComponentChild extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      num: 2019
-    }
-  }
+// class ComponentChild extends React.Component {
+//   constructor(props) {
+//     super(props)
+//     this.state = {
+//       num: 2019
+//     }
+//   }
  
-  componentDidMount() {
-    console.log("child component Did Mount")
-  }
-  clickComponent() {
-    console.log("Component click")
-  }
+//   componentDidMount() {
+//     console.log("child component Did Mount")
+//   }
+//   clickComponent() {
+//     console.log("Component click")
+//   }
  
-  render() {
-    return (<div > 
-      <p>1233</p>
-      <button  onClick={this.clickComponent}>点击</button>
-        <p>{this.state.num}</p>
-       </div>
-    )
-  }
-}
+//   render() {
+//     return (<div > 
+//       <p>1233</p>
+//       <button  onClick={this.clickComponent}>点击</button>
+//         <p>{this.state.num}</p>
+//        </div>
+//     )
+//   }
+// }
  
  
  
-let iihoc = (WrapComponet) => class extends WrapComponet {
-  constructor(props) {
-      super(props)
-      this.state = {
-          num: 2000
-      }
-  }
-  componentDidMount() {
-      console.log('iihoc componentDidMount')
-  }
-  clickComponent() {
-    console.log("Component clic123k")
-  }
-  render () {
-    console.log(super.render());
-    return (
-      <div>
-          <div onClick={this.clickComponent}>iiHoc 点击</div>
+// let iihoc = (WrapComponet) => class extends WrapComponet {
+//   constructor(props) {
+//       super(props)
+//       this.state = {
+//           num: 2000
+//       }
+//   }
+//   componentDidMount() {
+//       console.log('iihoc componentDidMount')
+//   }
+//   clickComponent() {
+//     console.log("Component clic123k")
+//   }
+//   render () {
+//     console.log(super.render());
+//     return (
+//       <div>
+//           <div onClick={this.clickComponent}>iiHoc 点击</div>
   
-          <div><WrapComponet /></div> {/*//用的是父组件的state */}
-            <div>{super.render()}</div>{/*//反向继承，用的是子组件的state；*/}
-      </div>
+//           <div><WrapComponet /></div> {/*//用的是父组件的state */}
+//             <div>{super.render()}</div>{/*//反向继承，用的是子组件的state；*/}
+//       </div>
   
-    )
-  }
-}
+//     )
+//   }
+// }
 
 // export default ProxyHoc(App, '传值aaaas');
-export default iihoc(ComponentChild);
+// export default iihoc(ComponentChild);
 
 /**
  * 无状态组件

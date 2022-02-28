@@ -141,3 +141,37 @@ event loop它最主要是分三部分：主线程、宏队列（macrotask）、�
     //1,2,3,4,5,6,7,8,9,10,11,12
 
     //先执行主队列 再执行微队列（执行里面的主队列，微队列，有宏队列push到最后）  再执行宏队列（先执行里面的主队列，微队列，把宏队列push到最后 按这个顺序执行下一个宏队列） 
+
+
+    
+    setTimeout(() => {
+      console.log(61)
+      let pro = new Promise((resolve) => {
+        console.log(72);
+        setTimeout(() => {
+          resolve()
+        })
+      });
+      pro.then(() => {
+        console.log(18)
+      });
+      setTimeout(() => {console.log(12)})
+    })
+    let promise = new Promise((resolve,reject) => {
+      console.log(1)
+      setTimeout(() => {
+        console.log(9);
+        promise.then(() => {
+          console.log(10)}
+        )
+      })
+      resolve()
+      console.log(2)
+    })
+    console.log(0)
+    promise.then(() => {
+      console.log(15)
+      setTimeout(() => {console.log(124)})
+    })
+
+     1 2 0 15 61 72 9 10 124 18 12   

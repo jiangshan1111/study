@@ -32,6 +32,13 @@ https://juejin.cn/post/6961222829979697165
   响应式原理的改变
   Vue3.x 使用 Proxy[ˈprɑːksi] 取代 Vue2.x 版本的 Object.defineProperty
 
+  1，Object.defineproperty()操作的是对象的属性，需要对属性进行深度的遍历和监听，并且无法动态反应对象属性的添加或删除，以及数组下标的变化，需要使用$set手动的触发更新
+
+  2，proxy是拦截整个对象，拓展对象的能力，因此对对象的任何操作都会走到处理逻辑
+
+
+
+
   组件选项声明方式
   Vue3.x 使用 Composition API
   setup 是 Vue3.x 新增的一个选项， 他是组件内使用 Composition API 的入口。
